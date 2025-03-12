@@ -17,7 +17,7 @@ class MainScreen : ComponentActivity() {
             val currentScreen = screenStack.last() // Get top screen in the stack
 
             when (currentScreen) {
-                "game" -> IntroScreen(navigationViewModel)
+                "game" -> IntroScreen(navigationViewModel, this)
                 "welcome" -> WelcomeScreen(navigationViewModel)
             }
         }

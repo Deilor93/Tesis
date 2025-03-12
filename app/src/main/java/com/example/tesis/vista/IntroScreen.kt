@@ -23,11 +23,19 @@ import androidx.compose.ui.unit.sp
 import com.example.tesis.R
 import com.example.tesis.logica.DbClass
 import android.content.Context
+import com.example.tesis.logica.Estudiante
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
-fun IntroScreen(navigationViewModel: NavigationViewModel, viewModel: EstudianteViewModel) {
+fun IntroScreen(navigationViewModel: NavigationViewModel, context: Context) {
     var nombreEstudiante by remember { mutableStateOf("") }
     var codigoEstudiante by remember { mutableStateOf("") }
+
+    // Instancia de base de datos
+    val db = remember { DbClass.getDatabase(context) }
+    val estudianteDao = db.estudianteDao()
 
     val mogra = FontFamily(
         Font(R.font.mogra_regular, FontWeight.Light),
@@ -36,6 +44,14 @@ fun IntroScreen(navigationViewModel: NavigationViewModel, viewModel: EstudianteV
         Font(R.font.mogra_regular, FontWeight.Medium),
         Font(R.font.mogra_regular, FontWeight.Bold)
     )
+
+    // Guardar codigo y nombre en DB
+    fun saveEstudiante(nombre: String, codigo: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val estudiante = Estudiante(nombre = nombre, codigo = codigo)
+            estudianteDao.insertEstudiante(estudiante)
+        }
+    }
 
     Surface (modifier = Modifier
         .fillMaxSize(),
@@ -112,7 +128,7 @@ fun IntroScreen(navigationViewModel: NavigationViewModel, viewModel: EstudianteV
 
                 Button(
                     onClick = {
-                        viewModel.saveEstudiante(nombreEstudiante, codigoEstudiante)
+                        saveEstudiante(nombreEstudiante, codigoEstudiante)
                         navigationViewModel.navigateTo("welcome")
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF007BFF)),

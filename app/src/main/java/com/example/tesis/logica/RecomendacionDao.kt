@@ -12,8 +12,8 @@ interface RecomendacionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecomendacion(recomendacion: Recomendacion)
 
-    @Query("SELECT * FROM participantes WHERE id = :id")
-    suspend fun getRecomendiacionById(id: Int): Recomendacion?
+    //@Query("SELECT * FROM estudiantes WHERE id = :id")
+    //suspend fun getRecomendiacionById(id: Int): List<Recomendacion>
 
     @Query("SELECT * FROM recomendaciones")
     fun getAllRecomendaciones(): List<Recomendacion>

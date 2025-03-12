@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.databinding.adapters.Converters
 import androidx.room.*
 
-@Database(entities = [Categoria::class, Pregunta::class, Estudiante::class, Resultado::class, Recomendacion::class], version = 1)
-@TypeConverters(Converters::class)
+@Database(entities = [Categoria::class, Pregunta::class, Estudiante::class, Resultado::class, Recomendacion::class], version = 1, exportSchema = false)
+//@TypeConverters(Converters::class)
 abstract class DbClass : RoomDatabase() {
     abstract fun categoriaDao(): CategoriaDao
     abstract fun preguntaDao(): PreguntaDao
