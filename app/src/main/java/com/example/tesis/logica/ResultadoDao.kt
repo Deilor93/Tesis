@@ -12,6 +12,6 @@ interface ResultadoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertResultado(resultado: Resultado)
 
-    @Query("SELECT * FROM resultados WHERE participanteId = :participanteId")
+    @Query("SELECT * FROM resultados WHERE estudianteId = :participanteId")
     fun getResultadosByParticipante(participanteId: Int): List<Resultado>
 }

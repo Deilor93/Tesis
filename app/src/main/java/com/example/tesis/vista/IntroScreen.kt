@@ -23,6 +23,11 @@ import androidx.compose.ui.unit.sp
 import com.example.tesis.R
 import com.example.tesis.logica.DbClass
 import android.content.Context
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.KeyboardType
 import com.example.tesis.logica.Estudiante
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +42,7 @@ fun IntroScreen(navigationViewModel: NavigationViewModel, context: Context) {
     val db = remember { DbClass.getDatabase(context) }
     val estudianteDao = db.estudianteDao()
 
+    // Importar fuente para letras
     val mogra = FontFamily(
         Font(R.font.mogra_regular, FontWeight.Light),
         Font(R.font.mogra_regular, FontWeight.Normal),
@@ -44,6 +50,8 @@ fun IntroScreen(navigationViewModel: NavigationViewModel, context: Context) {
         Font(R.font.mogra_regular, FontWeight.Medium),
         Font(R.font.mogra_regular, FontWeight.Bold)
     )
+
+    var localFocusManager = LocalFocusManager.current
 
     // Guardar codigo y nombre en DB
     fun saveEstudiante(nombre: String, codigo: String) {
@@ -59,7 +67,12 @@ fun IntroScreen(navigationViewModel: NavigationViewModel, context: Context) {
     ){
         Row (
             modifier = Modifier
-                .fillMaxWidth().absoluteOffset(0.dp, 50.dp),
+                .fillMaxWidth().absoluteOffset(0.dp, 50.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        localFocusManager.clearFocus()
+                    })
+                },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Top
 
@@ -121,7 +134,7 @@ fun IntroScreen(navigationViewModel: NavigationViewModel, context: Context) {
                     maxLines = 1,
                     modifier = Modifier
                         .align(Alignment.End),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))

@@ -3,11 +3,36 @@ package com.example.tesis.logica
 import androidx.room.*
 
 
-@Entity(tableName = "resultados")
+@Entity(tableName = "resultados",
+    foreignKeys = [
+        ForeignKey(
+            entity = Estudiante::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("estudianteId"),
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Clasificacion::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("clasificacionId"),
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Pregunta::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("preguntaId"),
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class Resultado(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val participanteId: Int,
+    val estudianteId: Int,
     val preguntaId: Int,
+    val clasificacionId: Int,
     val respuesta: String,
     val fecha: String
 )
