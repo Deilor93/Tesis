@@ -24,7 +24,6 @@ import com.example.tesis.R
 import com.example.tesis.logica.DbClass
 import android.content.Context
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType

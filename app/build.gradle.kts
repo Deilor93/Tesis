@@ -59,6 +59,9 @@ dependencies {
     ksp("androidx.room:room-compiler:2.5.0")
     implementation("androidx.room:room-ktx:2.5.0")
 
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("io.coil-kt:coil-gif:2.4.0") // Soporte para GIFs
+
     val composeBom = platform("androidx.compose:compose-bom:2025.02.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)

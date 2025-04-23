@@ -58,10 +58,11 @@ fun WelcomeScreen(navigationViewModel: NavigationViewModel) {
             )
 
             Button(
-                onClick = { navigationViewModel.goBack() },
+                onClick = {
+                    navigationViewModel.navigateTo("test") },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF007BFF))
             ) {
-                Text("Regresar", color = Color.Black)
+                Text("Continuar", color = Color.Black)
             }
         }
     }

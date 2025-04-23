@@ -19,6 +19,7 @@ class MainScreen : ComponentActivity() {
             when (currentScreen) {
                 "game" -> IntroScreen(navigationViewModel, this)
                 "welcome" -> WelcomeScreen(navigationViewModel)
+                "test" -> TestScreen(navigationViewModel, this)
             }
         }
     }

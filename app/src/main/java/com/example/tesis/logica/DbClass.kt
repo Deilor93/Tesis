@@ -24,6 +24,7 @@ abstract class DbClass : RoomDatabase() {
                     "soly_db"
                 ).fallbackToDestructiveMigration()
                 .createFromAsset("soly_db.db")
+                .allowMainThreadQueries()
                 .build()
                 INSTANCE = instance
                 instance
