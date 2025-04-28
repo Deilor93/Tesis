@@ -10,8 +10,12 @@ import androidx.room.Query
 interface RespuestaDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertResultado(resultado: Resultado)
+    suspend fun insertRespuesta(respuesta: Respuesta)
 
-    @Query("SELECT * FROM resultados WHERE estudianteId = :participanteId")
-    fun getResultadosByParticipante(participanteId: Int): List<Resultado>
+    @Query("SELECT respuesta FROM respuestas WHERE preguntaId = :preguntaId")
+    fun getRespuestaByPregunta(preguntaId: Int): String
+
+    @Query("SELECT respuesta FROM respuestas WHERE id=:id")
+    fun getRespuestaById(id: Int): String
+
 }

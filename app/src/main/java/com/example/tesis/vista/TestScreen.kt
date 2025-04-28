@@ -2,6 +2,8 @@ package com.example.tesis.vista
 
 import android.content.Context
 import android.util.Log
+import android.widget.RadioGroup
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -17,17 +19,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.RadioButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
@@ -38,6 +48,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -67,17 +78,33 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
 
     val db = remember { DbClass.getDatabase(context) }
     val preguntaDao = db.preguntaDao()
+    val respuestaDao = db.respuestaDao()
 
-    var idPregunta = 1
+    var idPregunta by remember{mutableStateOf(1)}
+    var idRespuesta by remember{mutableStateOf(1)}
+    var imagenPregunta by remember { mutableStateOf(1) }
 
-    val pregunta = remember { mutableStateOf(preguntaDao.getTextoPreguntaById(idPregunta))}
+    var pregunta by remember { mutableStateOf("")}
     val cantidadPreguntas = preguntaDao.getCantidadPreguntas()
 
+    var respuesta by remember {mutableStateOf("")}
+
     //Contador de pregunta actual para rastrear progreso
-    val currentStep = remember { mutableStateOf(0) }
+    var currentStep by remember { mutableStateOf(0) }
+
+    val radioOptions: List<String> = (respuesta.split(","))
+    var (selectedOption, onOptionSelected) = remember { mutableStateOf<String?>(null) }
+
 
     //FocusManager para cerrar el teclado en pantalla al tocar fuera
     var localFocusManager = LocalFocusManager.current
+
+    //Actualizar pregunta, respuesta y seleccion dinamicamente
+    LaunchedEffect(idPregunta, idRespuesta) {
+        pregunta = preguntaDao.getTextoPreguntaById(idPregunta)
+        respuesta = respuestaDao.getRespuestaById(idRespuesta)
+        selectedOption = null // clear selection for new question
+    }
 
     Surface (modifier = Modifier
         .fillMaxSize(),
@@ -87,7 +114,7 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
         Column() {
             //Fila superior para mapa y Soly
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.Top
             ){
@@ -99,7 +126,7 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
                     modifier = Modifier.weight(1f)
                 ) {
 
-                    StepsProgressBar(modifier = Modifier.fillMaxWidth(), numberOfSteps = cantidadPreguntas, currentStep = currentStep.value)
+                    StepsProgressBar(modifier = Modifier.fillMaxWidth(), numberOfSteps = cantidadPreguntas, currentStep = currentStep)
                 }
 
                 //Columna Soly
@@ -118,9 +145,11 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
                 }
             }
             //Fila enunciado pregunta
-            Row() {
+            Row(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
-                    text = pregunta.value,
+                    text = pregunta,
                     fontSize = 50.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF34D9A2),
@@ -130,8 +159,62 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
                         .padding(12.dp)
                 )
             }
+            //Fila imagenes pregunta
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .weight(1f), // Small weight for image
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AnimatedContent(
+                    targetState = idPregunta,
+                    label = "TransicionImagen"
+                ) { targetIdPregunta ->
+
+                    val imageName = "p$targetIdPregunta" // example: "p1", "p2", "p3"
+                    val imageResId = context.resources.getIdentifier(
+                        imageName,
+                        "drawable",
+                        context.packageName
+                    )
+
+                    val validImage = if (imageResId != 0) imageResId else R.drawable.monstruo_2
+
+                    Image(
+                        painter = painterResource(id = validImage),
+                        contentDescription = "Imagen para pregunta $targetIdPregunta",
+                        modifier = Modifier
+                            .size(200.dp)
+                    )
+                }
+            }
             //Fila respuestas pregunta
-            Row() {
+            Row(
+                modifier = Modifier.weight(1f).selectableGroup()
+            ) {
+
+                radioOptions.forEach {
+                    text->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .selectable(selected = (text == selectedOption),
+                                onClick = { onOptionSelected(text) },
+                                role = Role.RadioButton
+                            ),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        RadioButton(
+                            selected = (text==selectedOption),
+                            onClick = null
+                        )
+                        Text(
+                            text = text
+                        )
+                    }
+                }
 
             }
 
@@ -151,18 +234,22 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
                 Button(
                     onClick = {
 
-                        if (currentStep.value<cantidadPreguntas-1){
-                            currentStep.value = currentStep.value + 1
+                        if (currentStep<cantidadPreguntas-1){
+                            currentStep = currentStep + 1
                             idPregunta = idPregunta +1
-                            pregunta.value = preguntaDao.getTextoPreguntaById(idPregunta)
-                        }else if(currentStep.value<cantidadPreguntas){
-                            currentStep.value = currentStep.value +1
+                            //pregunta.value = preguntaDao.getTextoPreguntaById(idPregunta.value)
+                            idRespuesta = idRespuesta +1
+                            //respuesta.value = respuestaDao.getRespuestaById(idRespuesta.value)
+                        }else if(currentStep<cantidadPreguntas){
+                            currentStep = currentStep +1
                         }
 
 
-                        Log.d("Valor pregunta", idPregunta.toString())
-                        Log.d("cantidad preguntas", cantidadPreguntas.toString())
-                        Log.d("Pregunta actual", currentStep.value.toString())
+                        Log.d("Id Pregunta", idPregunta.toString())
+                        Log.d("Cantidad preguntas", cantidadPreguntas.toString())
+                        Log.d("Pregunta actual", currentStep.toString())
+                        Log.d("respuesta", respuesta.toString())
+                        Log.d("Id respuesta", idRespuesta.toString())
 
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF007BFF)),
@@ -253,6 +340,7 @@ fun StarCanvasSmooth(
     }
 }
 
+//Creacion manual de la estrella
 private fun createStarPath(
     center: Offset,
     outerRadius: Float,
@@ -262,6 +350,7 @@ private fun createStarPath(
     val path = Path()
     val angleStep = 360.0 / (points * 2)
 
+    //For para dibujar las lineas de la estrella basado en cantidad de puntas
     for (i in 0 until points * 2) {
         val angleDegrees = i * angleStep - 90
         val angleRadians = Math.toRadians(angleDegrees)
@@ -276,6 +365,7 @@ private fun createStarPath(
     return path
 }
 
+//Loader para poder mostrar GIFs en pantalla
 @Composable
 fun GifLoader(resourceId: Int, modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -297,6 +387,7 @@ fun GifLoader(resourceId: Int, modifier: Modifier = Modifier) {
     )
 }
 
+//Carga el gif utilizando el loader creado
 @Composable
 fun GifPreview() {
 
