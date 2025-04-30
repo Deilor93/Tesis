@@ -23,23 +23,25 @@ import androidx.compose.ui.unit.sp
 import com.example.tesis.R
 import com.example.tesis.logica.DbClass
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.navigation.NavController
 import com.example.tesis.logica.Estudiante
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
-fun IntroScreen(navigationViewModel: NavigationViewModel, context: Context) {
+fun IntroScreen(navController: NavController, context: Context, sharedViewModel: SharedViewModel) {
     var nombreEstudiante by remember { mutableStateOf("") }
     var codigoEstudiante by remember { mutableStateOf("") }
 
     // Instancia de base de datos
     val db = remember { DbClass.getDatabase(context) }
-    val estudianteDao = db.estudianteDao()
 
     // Importar fuente para letras
     val mogra = FontFamily(
@@ -52,13 +54,8 @@ fun IntroScreen(navigationViewModel: NavigationViewModel, context: Context) {
 
     var localFocusManager = LocalFocusManager.current
 
-    // Guardar codigo y nombre en DB
-    fun saveEstudiante(nombre: String, codigo: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val estudiante = Estudiante(nombre = nombre, codigo = codigo)
-            estudianteDao.insertEstudiante(estudiante)
-        }
-    }
+    var mostrarAlerta by remember { mutableStateOf(false) }
+
 
     Surface (modifier = Modifier
         .fillMaxSize(),
@@ -138,12 +135,47 @@ fun IntroScreen(navigationViewModel: NavigationViewModel, context: Context) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
+                if (mostrarAlerta) {
+                    AlertDialog(
+                        onDismissRequest = { mostrarAlerta = false },
+                        title = { Text("Atención") },
+                        text = { Text("Debe ingresar el nombre y el código del estudiante para continuar") },
+                        confirmButton = {
+                            Button(onClick = {
+                                mostrarAlerta = false
+                                // Acción de confirmación
+                            }) {
+                                Text("Aceptar")
+                            }
+                        }
+                    )
+                }
+
                 Button(
                     onClick = {
-                        saveEstudiante(nombreEstudiante, codigoEstudiante)
-                        navigationViewModel.navigateTo("welcome")
+                        CoroutineScope(Dispatchers.IO).launch {
+                            if(nombreEstudiante != "" && codigoEstudiante != ""){
+                                val est = Estudiante(nombre = nombreEstudiante, codigo = codigoEstudiante)
+                                val id = db.estudianteDao().insertEstudiante(est).toInt()
+                                val estWithId = est.copy(id = id)
+
+                                Log.d("id", id.toString())
+                                Log.d("estwid", estWithId.toString())
+
+                                withContext(Dispatchers.Main) {
+                                    sharedViewModel.estudiante = estWithId
+                                    Log.d("DEBUG", "Estudiante set before nav: ${sharedViewModel.estudiante}")
+                                    Log.d("DEBUG", "IntroScreen ViewModel hash: ${sharedViewModel.hashCode()}")
+
+                                    navController.navigate("welcome")
+                                }
+
+                            }else{
+                                mostrarAlerta = true
+                            }
+                        }
                     },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF007BFF)),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF34D9A2)),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .wrapContentSize(Alignment.Center)

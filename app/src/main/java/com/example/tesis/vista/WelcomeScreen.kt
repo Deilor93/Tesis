@@ -1,27 +1,39 @@
 package com.example.tesis.vista
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.tesis.R
 
 @Composable
-fun WelcomeScreen(navigationViewModel: NavigationViewModel) {
+fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel) {
 
+    Log.d("DEBUG", "WelcomeScreen ViewModel hash: ${sharedViewModel.hashCode()}")
+
+    val estudiante = sharedViewModel.estudiante
+    Log.d("est", sharedViewModel.estudiante.toString())
+    Log.d("DEBUG", "Welcome screen got estudiante: ${sharedViewModel.estudiante}")
     val mogra = FontFamily(
         Font(R.font.mogra_regular, FontWeight.Light),
         Font(R.font.mogra_regular, FontWeight.Normal),
@@ -48,21 +60,47 @@ fun WelcomeScreen(navigationViewModel: NavigationViewModel) {
 
         Column (modifier = Modifier.align(Alignment.CenterVertically).absoluteOffset(-100.dp, 0.dp)){
             Text(
-                text = "Soly quiere jugar contigo",
-                fontSize = 58.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF34D9A2),
-                fontFamily = mogra,
-                modifier = Modifier
-                    .wrapContentSize(Alignment.Center)
+                buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color(0xFF34D9A2),
+                            fontSize = 58.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = mogra
+                        )
+                    ) { append("Hola ") }
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color(0xFFFF5500),
+                            fontSize = 58.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = mogra
+                        )
+                    ) { append(estudiante?.nombre +" ") }
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color(0xFF34D9A2),
+                            fontSize = 58.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = mogra
+                        )
+                    ) { append("Soly quiere jugar contigo") }
+                }
             )
 
-            Button(
+            IconButton(
                 onClick = {
-                    navigationViewModel.navigateTo("test") },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF007BFF))
+                    navController.navigate("test")
+                },
+                modifier = Modifier
+                    .align(Alignment.End)
             ) {
-                Text("Continuar", color = Color.Black)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Siguiente",
+                    tint = Color.Black,
+                    modifier = Modifier.size(48.dp)
+                )
             }
         }
     }

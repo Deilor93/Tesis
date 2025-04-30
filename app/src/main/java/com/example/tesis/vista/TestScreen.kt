@@ -1,9 +1,16 @@
 package com.example.tesis.vista
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
-import android.widget.RadioGroup
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -11,24 +18,24 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
@@ -55,17 +61,30 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.example.tesis.R
 import com.example.tesis.logica.DbClass
+import com.example.tesis.logica.Resultado
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.cos
 import kotlin.math.sin
 
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
+fun TestScreen(
+    navController: NavController,
+    context: Context,
+    sharedViewModel: SharedViewModel
+) {
 
     // Importar fuente para letras
     val mogra = FontFamily(
@@ -79,12 +98,14 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
     val db = remember { DbClass.getDatabase(context) }
     val preguntaDao = db.preguntaDao()
     val respuestaDao = db.respuestaDao()
+    val resultadoDao = db.resultadoDao()
+
+    val estudiante = sharedViewModel.estudiante
 
     var idPregunta by remember{mutableStateOf(1)}
     var idRespuesta by remember{mutableStateOf(1)}
-    var imagenPregunta by remember { mutableStateOf(1) }
 
-    var pregunta by remember { mutableStateOf("")}
+    var preguntaText by remember { mutableStateOf("")}
     val cantidadPreguntas = preguntaDao.getCantidadPreguntas()
 
     var respuesta by remember {mutableStateOf("")}
@@ -92,18 +113,64 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
     //Contador de pregunta actual para rastrear progreso
     var currentStep by remember { mutableStateOf(0) }
 
-    val radioOptions: List<String> = (respuesta.split(","))
-    var (selectedOption, onOptionSelected) = remember { mutableStateOf<String?>(null) }
+    val radioOptions by remember(respuesta) { mutableStateOf(respuesta.split(",")) }
+    val (selectedOption, onOptionSelected) = remember(idPregunta) { mutableStateOf<String?>(null) }
 
+    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+    val current = LocalDateTime.now().format(formatter)
+
+    var mostrarAlerta by remember { mutableStateOf(false) }
 
     //FocusManager para cerrar el teclado en pantalla al tocar fuera
     var localFocusManager = LocalFocusManager.current
 
     //Actualizar pregunta, respuesta y seleccion dinamicamente
     LaunchedEffect(idPregunta, idRespuesta) {
-        pregunta = preguntaDao.getTextoPreguntaById(idPregunta)
+        preguntaText = preguntaDao.getTextoPreguntaById(idPregunta)
         respuesta = respuestaDao.getRespuestaById(idRespuesta)
-        selectedOption = null // clear selection for new question
+        //selectedOption = null // clear selection for new question
+    }
+
+    if (mostrarAlerta) {
+        AlertDialog(
+            onDismissRequest = { mostrarAlerta = false },
+            title = { Text("Atención") },
+            text = { Text("Debes responder la pregunta para poder continuar") },
+            confirmButton = {
+                Button(onClick = {
+                    mostrarAlerta = false
+                    // Acción de confirmación
+                }) {
+                    Text("Aceptar")
+                }
+            }
+        )
+    }
+
+    fun saveRespuesta() {
+        CoroutineScope(Dispatchers.IO).launch IconButton@{
+            try {
+                val pregunta = db.preguntaDao().getPreguntaById(idPregunta)
+
+                Log.d("Preg", pregunta.toString())
+                Log.d("DEBUG", "idEstudiante = ${estudiante?.id.toString()}, idPregunta = $idPregunta")
+                if (estudiante != null && pregunta != null) {
+                    val resultado = Resultado(
+                        estudianteId = estudiante.id,
+                        preguntaId = idPregunta,
+                        respuesta = selectedOption.toString(),
+                        fecha = current.toString()
+                    )
+                    resultadoDao.insertResultado(resultado)
+                    Log.d("DB", "Resultado insertado con éxito")
+                } else {
+                    Log.e("DB", "Estudiante o pregunta no existe — insert cancelado")
+                }
+
+            } catch (e: Exception) {
+                Log.e("DB_ERROR", "Error guardando resultado: ${e.message}", e)
+            }
+        }
     }
 
     Surface (modifier = Modifier
@@ -148,6 +215,20 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
             Row(
                 modifier = Modifier.weight(1f)
             ) {
+                AnimatedContent(
+                    targetState = preguntaText,
+                    transitionSpec = {
+                        slideInHorizontally(
+                                                animationSpec = tween(300),
+                                                initialOffsetX = { fullWidth -> fullWidth } // slide from right
+                                            ).togetherWith(
+                            slideOutHorizontally(
+                                                animationSpec = tween(300),
+                                                targetOffsetX = { fullWidth -> -fullWidth } // slide to left
+                                            ))
+                    },
+                    label = "PreguntaSlide"
+                ) { pregunta ->
                 Text(
                     text = pregunta,
                     fontSize = 50.sp,
@@ -157,23 +238,22 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
                     modifier = Modifier
                         .wrapContentSize(Alignment.Center)
                         .padding(12.dp)
-                )
+                )}
             }
             //Fila imagenes pregunta
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
                     .weight(1f), // Small weight for image
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AnimatedContent(
+                Crossfade(
                     targetState = idPregunta,
                     label = "TransicionImagen"
                 ) { targetIdPregunta ->
 
-                    val imageName = "p$targetIdPregunta" // example: "p1", "p2", "p3"
+                    val imageName = "p$targetIdPregunta" // ejemplo: "p1", "p2", "p3"
                     val imageResId = context.resources.getIdentifier(
                         imageName,
                         "drawable",
@@ -186,15 +266,15 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
                         painter = painterResource(id = validImage),
                         contentDescription = "Imagen para pregunta $targetIdPregunta",
                         modifier = Modifier
-                            .size(200.dp)
+                            .size(400.dp)
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(50.dp))
             //Fila respuestas pregunta
             Row(
-                modifier = Modifier.weight(1f).selectableGroup()
+                modifier = Modifier.weight(0.5f).selectableGroup()
             ) {
-
                 radioOptions.forEach {
                     text->
                     Column(
@@ -208,38 +288,28 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
                     ) {
                         RadioButton(
                             selected = (text==selectedOption),
-                            onClick = null
+                            onClick = { onOptionSelected(text) }
                         )
                         Text(
                             text = text
                         )
                     }
                 }
-
             }
+            Box (modifier = Modifier.weight(0.5f).align(Alignment.End)){
 
-        }
-
-        Row (modifier = Modifier.absoluteOffset(0.dp, 50.dp)){
-
-            Spacer(modifier = Modifier.width(300.dp))
-
-            Column (modifier = Modifier.align(Alignment.CenterVertically)){
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Button(
+                IconButton(
                     onClick = {
-
                         if (currentStep<cantidadPreguntas-1){
-                            currentStep = currentStep + 1
-                            idPregunta = idPregunta +1
-                            //pregunta.value = preguntaDao.getTextoPreguntaById(idPregunta.value)
-                            idRespuesta = idRespuesta +1
-                            //respuesta.value = respuestaDao.getRespuestaById(idRespuesta.value)
+                            if(selectedOption != null){
+                                currentStep = currentStep + 1
+                                idPregunta = idPregunta +1
+                                idRespuesta = idRespuesta +1
+                                saveRespuesta()
+                            }else{
+                                mostrarAlerta = true
+                            }
+
                         }else if(currentStep<cantidadPreguntas){
                             currentStep = currentStep +1
                         }
@@ -250,18 +320,25 @@ fun TestScreen(navigationViewModel: NavigationViewModel, context: Context) {
                         Log.d("Pregunta actual", currentStep.toString())
                         Log.d("respuesta", respuesta.toString())
                         Log.d("Id respuesta", idRespuesta.toString())
-
+                        Log.d("id estud", estudiante?.id.toString())
                     },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF007BFF)),
-                    shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
-                        .wrapContentSize(Alignment.Center)
-                        .align(Alignment.End)
+                        .align(Alignment.CenterEnd)
                 ) {
-                    Text("Siguiente", color = Color.Black)
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Siguiente",
+                        tint = Color.Black,
+                        modifier = Modifier.size(48.dp)
+                    )
                 }
+
+
             }
+
         }
+
+
     }
 }
 
@@ -371,7 +448,7 @@ fun GifLoader(resourceId: Int, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val imageLoader = ImageLoader.Builder(context)
         .components {
-            if (android.os.Build.VERSION.SDK_INT >= 28) {
+            if (Build.VERSION.SDK_INT >= 28) {
                 add(ImageDecoderDecoder.Factory())
             } else {
                 add(GifDecoder.Factory())
