@@ -13,7 +13,7 @@ interface ClasificacionDao{
     suspend fun insertClasificacion(clasificacion: Clasificacion)
 
     @Query("SELECT * FROM clasificaciones WHERE id = :id")
-    suspend fun getClasificacionById(id: Int): List<Clasificacion>
+    fun getClasificacionById(id: Int): Clasificacion?
 
     @Query("SELECT * FROM clasificaciones")
     fun getAllClasificaciones(): List<Clasificacion>

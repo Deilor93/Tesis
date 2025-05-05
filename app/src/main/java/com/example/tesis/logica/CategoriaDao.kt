@@ -12,7 +12,7 @@ interface CategoriaDao {
     suspend fun insertCategoria(categoria: Categoria)
 
     @Query("SELECT * FROM categorias WHERE id = :id")
-    suspend fun getCategoriaById(id: Int): Categoria?
+    fun getCategoriaById(id: Int): Categoria?
 
     @Query("SELECT * FROM categorias")
     fun getAllCategorias(): List<Categoria>

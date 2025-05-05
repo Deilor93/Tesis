@@ -20,4 +20,8 @@ interface RecomendacionDao {
 
     @Query("SELECT * FROM recomendaciones WHERE categoriaId = :categoriaId")
     fun getRecomendacionesByCategoria(categoriaId: Int): List<Recomendacion>
+
+    @Query("SELECT * FROM recomendaciones WHERE clasificacionId = :clasificacionId AND categoriaId = :categoriaId LIMIT 1")
+    suspend fun getRecomendacionByClasificacionYCategoria(clasificacionId: Int, categoriaId: Int): Recomendacion?
+
 }

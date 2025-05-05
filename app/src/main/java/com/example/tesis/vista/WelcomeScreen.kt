@@ -49,7 +49,7 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
     ) {
 
         Column(verticalArrangement = Arrangement.Center,
-            modifier = Modifier.absoluteOffset(-100.dp, 0.dp)){
+            modifier = Modifier.weight(0.45f)){
             Image(
                 painter = painterResource(id = R.drawable.monstruo_2),
                 contentDescription = "Soly",
@@ -58,7 +58,7 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
             )
         }
 
-        Column (modifier = Modifier.align(Alignment.CenterVertically).absoluteOffset(-100.dp, 0.dp)){
+        Column (modifier = Modifier.align(Alignment.CenterVertically).weight(0.45f)){
             Text(
                 buildAnnotatedString {
                     withStyle(
@@ -88,12 +88,15 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
                 }
             )
 
+
+        }
+        Box(modifier = Modifier.fillMaxHeight().weight(0.1f)){
             IconButton(
                 onClick = {
                     navController.navigate("test")
                 },
                 modifier = Modifier
-                    .align(Alignment.End)
+                    .align(Alignment.CenterEnd)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
@@ -103,5 +106,6 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
                 )
             }
         }
+
     }
 }

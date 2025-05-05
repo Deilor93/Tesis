@@ -55,14 +55,65 @@ abstract class DbClass : RoomDatabase() {
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId) VALUES (8, 'Leer te parece fácil o difícil?', 'Fácil', 1);")
 
                             // Insert into respuestas
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (1, 1, 'si,no');")
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (2, 2, 'si,no');")
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (3, 3, 'si,no');")
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (4, 4, 'si,no');")
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (5, 5, 'si,no');")
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (6, 6, 'si,no');")
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (7, 7, 'si,no');")
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (8, 8, 'fácil,difícil');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (1, 1, 'Si,No');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (2, 2, 'Si,No');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (3, 3, 'Si,No');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (4, 4, 'Si,No');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (5, 5, 'Si,No');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (6, 6, 'Si,No');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (7, 7, 'Si,No');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (8, 8, 'Fácil,Difícil');")
+
+                            //Insert into recomendaciones
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (1, 1, 1, 'Leer libros ilustrados en voz alta.\n" +
+                                    "Jugar juegos de palabras como rimas o adivinanzas.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (2, 1, 2, 'Escribir diarios o cuentos cortos.\n" +
+                                    "Participar en debates o discusiones grupales.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (3, 1, 3, 'Aprender un idioma extranjero.\n" +
+                                    "Crear y presentar historias o poesía.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (4, 2, 1, 'Usar rompecabezas sencillos y juegos matemáticos básicos.\n" +
+                                    "Practicar cálculos mentales con juegos interactivos.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (5, 2, 2, 'Resolver problemas matemáticos prácticos.\n" +
+                                    "Introducir actividades de programación básica.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (6, 2, 3, 'Trabajar en proyectos de razonamiento avanzado, como el diseño de algoritmos.\n" +
+                                    "Explorar estrategias de pensamiento lógico en ciencia.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (7, 3, 1, 'Jugar con bloques de construcción y maquetas.\n" +
+                                    "Trabajar en actividades simples de dibujo.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (8, 3, 2, 'Crear mapas conceptuales o dibujos detallados.\n" +
+                                    "Usar software de diseño simple, como herramientas de modelado 3D.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (9, 3, 3, 'Trabajar en proyectos avanzados de diseño arquitectónico o artístico.\n" +
+                                    "Resolver puzzles complejos, como cubos de Rubik.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (10, 4, 1, 'Escuchar música y reproducir ritmos simples.\n" +
+                                    "Participar en actividades básicas como golpear un tambor.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (11, 4, 2, 'Aprender un instrumento sencillo como flauta o teclado.\n" +
+                                    "Explorar diferentes géneros musicales.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (12, 4, 3, 'Componer melodías o participar en ensambles musicales.\n" +
+                                    "Estudiar teoría musical avanzada.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (13, 5, 1, 'Participar en juegos activos, como correr o saltar.\n" +
+                                    "Realizar ejercicios básicos de coordinación.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (14, 5, 2, 'Practicar deportes simples o actividades físicas en grupo.\n" +
+                                    "Aprender movimientos básicos de danza.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (15, 5, 3, 'Participar en deportes competitivos.\n" +
+                                    "Trabajar en coreografías avanzadas o teatro físico.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (16, 6, 1, 'Jugar juegos de rol para mejorar habilidades sociales.\n" +
+                                    "Participar en actividades grupales supervisadas.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (17, 6, 2, 'Resolver conflictos grupales con guía.\n" +
+                                    "Realizar dinámicas de equipo, como proyectos colaborativos.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (18, 6, 3, 'Liderar actividades grupales.\n" +
+                                    "Participar en mediación o enseñanza de habilidades sociales.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (19, 7, 1, 'Usar diarios para expresar pensamientos.\n" +
+                                    "Realizar ejercicios básicos de autoevaluación.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (20, 7, 2, 'Participar en actividades que fomenten la reflexión personal.\n" +
+                                    "Establecer metas pequeñas y alcanzables.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (21, 7, 3, 'Trabajar en proyectos de autoconocimiento profundo.\n" +
+                                    "Ayudar a otros a reflexionar sobre sus metas.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (22, 8, 1, 'Observar animales o plantas locales.\n" +
+                                    "Realizar caminatas en la naturaleza.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (23, 8, 2, 'Cultivar plantas o participar en proyectos de reciclaje.\n" +
+                                    "Explorar documentales sobre naturaleza.');")
+                            db.execSQL("INSERT INTO recomendaciones (id, categoriaId, clasificacionId, recomendacion) VALUES (24, 8, 3, 'Estudiar ecosistemas locales en profundidad.\n" +
+                                    "Participar en proyectos científicos sobre medio ambiente.');")
+
                         }
                     })
                     .fallbackToDestructiveMigration()

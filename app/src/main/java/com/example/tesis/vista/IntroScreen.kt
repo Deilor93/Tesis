@@ -61,140 +61,143 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
         .fillMaxSize(),
         color = Color(0xFFFFFF99)
     ){
-        Row (
-            modifier = Modifier
-                .fillMaxWidth().absoluteOffset(0.dp, 50.dp)
+        Column(modifier = Modifier.fillMaxSize()
                 .pointerInput(Unit) {
                     detectTapGestures(onTap = {
-                        localFocusManager.clearFocus()
+                    localFocusManager.clearFocus()
                     })
-                },
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Top
-
-        ) {
-
-            Text(
-                buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color(0xFFFF5500),
-                            fontSize = 100.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = mogra
-                        )
-                    ) { append("JUEGA ") }
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color(0xFF55DFBE),
-                            fontSize = 100.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = mogra
-                        )
-                    ) { append("CON ") }
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color(0xFF34D9A2),
-                            fontSize = 100.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = mogra
-                        )
-                    ) { append("SOLY") }
                 }
-            )
-        }
+        ){
 
-        Row (modifier = Modifier.absoluteOffset(0.dp, 50.dp)){
-
-            Spacer(modifier = Modifier.width(300.dp))
-            Column (modifier = Modifier.align(Alignment.CenterVertically)){
-
-                OutlinedTextField(
-                    value = nombreEstudiante,
-                    onValueChange = { nombreEstudiante = it },
-                    label = { Text("Nombre de estudiante") },
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White),
-                    maxLines = 1,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth().weight(0.2f).padding(top = 50.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.Top
+            ) {
+                Text(
+                    buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color(0xFFFF5500),
+                                fontSize = 100.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = mogra
+                            )
+                        ) { append("JUEGA ") }
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color(0xFF55DFBE),
+                                fontSize = 100.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = mogra
+                            )
+                        ) { append("CON ") }
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color(0xFF34D9A2),
+                                fontSize = 100.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = mogra
+                            )
+                        ) { append("SOLY") }
+                    }
                 )
+            }
 
-                Spacer(modifier = Modifier.height(10.dp))
+            Row (modifier = Modifier.weight(0.8f)){
 
-                OutlinedTextField(
-                    value = codigoEstudiante,
-                    onValueChange = { codigoEstudiante = it },
-                    label = { Text("Código estudiantil") },
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White),
-                    maxLines = 1,
-                    modifier = Modifier
-                        .align(Alignment.End),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number)
-                )
+                Spacer(modifier = Modifier.width(300.dp))
+                Column (modifier = Modifier.align(Alignment.CenterVertically)){
 
-                Spacer(modifier = Modifier.height(20.dp))
+                    OutlinedTextField(
+                        value = nombreEstudiante,
+                        onValueChange = { nombreEstudiante = it },
+                        label = { Text("Nombre de estudiante") },
+                        colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White),
+                        maxLines = 1,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    )
 
-                if (mostrarAlerta) {
-                    AlertDialog(
-                        onDismissRequest = { mostrarAlerta = false },
-                        title = { Text("Atención") },
-                        text = { Text("Debe ingresar el nombre y el código del estudiante para continuar") },
-                        confirmButton = {
-                            Button(onClick = {
-                                mostrarAlerta = false
-                                // Acción de confirmación
-                            }) {
-                                Text("Aceptar")
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    OutlinedTextField(
+                        value = codigoEstudiante,
+                        onValueChange = { codigoEstudiante = it },
+                        label = { Text("Código estudiantil") },
+                        colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White),
+                        maxLines = 1,
+                        modifier = Modifier
+                            .align(Alignment.End),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number)
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    if (mostrarAlerta) {
+                        AlertDialog(
+                            onDismissRequest = { mostrarAlerta = false },
+                            title = { Text("Atención") },
+                            text = { Text("Debe ingresar el nombre y el código del estudiante para continuar") },
+                            confirmButton = {
+                                Button(onClick = {
+                                    mostrarAlerta = false
+                                    // Acción de confirmación
+                                }) {
+                                    Text("Aceptar")
+                                }
                             }
-                        }
+                        )
+                    }
+
+                    Button(
+                        onClick = {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                if(nombreEstudiante != "" && codigoEstudiante != ""){
+                                    val est = Estudiante(nombre = nombreEstudiante, codigo = codigoEstudiante)
+                                    val id = db.estudianteDao().insertEstudiante(est).toInt()
+                                    val estWithId = est.copy(id = id)
+
+                                    Log.d("id", id.toString())
+                                    Log.d("estwid", estWithId.toString())
+
+                                    withContext(Dispatchers.Main) {
+                                        sharedViewModel.estudiante = estWithId
+                                        Log.d("DEBUG", "Estudiante set before nav: ${sharedViewModel.estudiante}")
+                                        Log.d("DEBUG", "IntroScreen ViewModel hash: ${sharedViewModel.hashCode()}")
+
+                                        navController.navigate("welcome")
+                                    }
+                                }else{
+                                    mostrarAlerta = true
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF34D9A2)),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.Center)
+                            .align(Alignment.End)
+                    ) {
+                        Text("Comenzar", color = Color.Black)
+                    }
+                }
+
+
+                Column {
+                    Image(
+                        painter = painterResource(id = R.drawable.monstruo_2),
+                        contentDescription = "Soly",
+                        modifier = Modifier
+                            .size(1000.dp)
                     )
                 }
-
-                Button(
-                    onClick = {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            if(nombreEstudiante != "" && codigoEstudiante != ""){
-                                val est = Estudiante(nombre = nombreEstudiante, codigo = codigoEstudiante)
-                                val id = db.estudianteDao().insertEstudiante(est).toInt()
-                                val estWithId = est.copy(id = id)
-
-                                Log.d("id", id.toString())
-                                Log.d("estwid", estWithId.toString())
-
-                                withContext(Dispatchers.Main) {
-                                    sharedViewModel.estudiante = estWithId
-                                    Log.d("DEBUG", "Estudiante set before nav: ${sharedViewModel.estudiante}")
-                                    Log.d("DEBUG", "IntroScreen ViewModel hash: ${sharedViewModel.hashCode()}")
-
-                                    navController.navigate("welcome")
-                                }
-
-                            }else{
-                                mostrarAlerta = true
-                            }
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF34D9A2)),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .wrapContentSize(Alignment.Center)
-                        .align(Alignment.End)
-                ) {
-                    Text("Comenzar", color = Color.Black)
-                }
             }
 
-
-            Column {
-                Image(
-                    painter = painterResource(id = R.drawable.monstruo_2),
-                    contentDescription = "Soly",
-                    modifier = Modifier
-                        .size(1000.dp)
-                )
-            }
         }
+
     }
 
 

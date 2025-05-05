@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -72,6 +73,7 @@ import com.example.tesis.logica.Resultado
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.cos
@@ -177,143 +179,170 @@ fun TestScreen(
         .fillMaxSize(),
         color = Color(0xFFFFFF99)
     ){
+        Row(modifier = Modifier.fillMaxSize()){
         //Columna contenedora
-        Column() {
-            //Fila superior para mapa y Soly
-            Row(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.Top
-            ){
+            Column (modifier = Modifier.fillMaxHeight().weight(0.9f)){
+                //Fila superior para mapa y Soly
+                Row(
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.Top
+                ){
 
-                //Columna mapa
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.weight(1f)
-                ) {
-
-                    StepsProgressBar(modifier = Modifier.fillMaxWidth(), numberOfSteps = cantidadPreguntas, currentStep = currentStep)
-                }
-
-                //Columna Soly
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    //GifPreview()
-                    Image(
-                        painter = painterResource(id = R.drawable.monstruo_2),
-                        contentDescription = "Soly",
-                        modifier = Modifier
-                            .size(300.dp)
-                    )
-                }
-            }
-            //Fila enunciado pregunta
-            Row(
-                modifier = Modifier.weight(1f)
-            ) {
-                AnimatedContent(
-                    targetState = preguntaText,
-                    transitionSpec = {
-                        slideInHorizontally(
-                                                animationSpec = tween(300),
-                                                initialOffsetX = { fullWidth -> fullWidth } // slide from right
-                                            ).togetherWith(
-                            slideOutHorizontally(
-                                                animationSpec = tween(300),
-                                                targetOffsetX = { fullWidth -> -fullWidth } // slide to left
-                                            ))
-                    },
-                    label = "PreguntaSlide"
-                ) { pregunta ->
-                Text(
-                    text = pregunta,
-                    fontSize = 50.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF34D9A2),
-                    fontFamily = mogra,
-                    modifier = Modifier
-                        .wrapContentSize(Alignment.Center)
-                        .padding(12.dp)
-                )}
-            }
-            //Fila imagenes pregunta
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f), // Small weight for image
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Crossfade(
-                    targetState = idPregunta,
-                    label = "TransicionImagen"
-                ) { targetIdPregunta ->
-
-                    val imageName = "p$targetIdPregunta" // ejemplo: "p1", "p2", "p3"
-                    val imageResId = context.resources.getIdentifier(
-                        imageName,
-                        "drawable",
-                        context.packageName
-                    )
-
-                    val validImage = if (imageResId != 0) imageResId else R.drawable.monstruo_2
-
-                    Image(
-                        painter = painterResource(id = validImage),
-                        contentDescription = "Imagen para pregunta $targetIdPregunta",
-                        modifier = Modifier
-                            .size(400.dp)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(50.dp))
-            //Fila respuestas pregunta
-            Row(
-                modifier = Modifier.weight(0.5f).selectableGroup()
-            ) {
-                radioOptions.forEach {
-                    text->
+                    //Columna mapa
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth(0.5f)
-                            .selectable(selected = (text == selectedOption),
-                                onClick = { onOptionSelected(text) },
-                                role = Role.RadioButton
-                            ),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        RadioButton(
-                            selected = (text==selectedOption),
-                            onClick = { onOptionSelected(text) }
-                        )
-                        Text(
-                            text = text
+
+                        StepsProgressBar(modifier = Modifier.fillMaxWidth(), numberOfSteps = cantidadPreguntas, currentStep = currentStep)
+                    }
+
+                    //Columna Soly
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        //GifPreview()
+                        Image(
+                            painter = painterResource(id = R.drawable.monstruo_2),
+                            contentDescription = "Soly",
+                            modifier = Modifier
+                                .size(300.dp)
                         )
                     }
                 }
+                //Fila enunciado pregunta
+                Row(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    AnimatedContent(
+                        targetState = preguntaText,
+                        transitionSpec = {
+                            slideInHorizontally(
+                                                    animationSpec = tween(500),
+                                                    initialOffsetX = { fullWidth -> fullWidth } // slide from right
+                                                ).togetherWith(
+                                slideOutHorizontally(
+                                                    animationSpec = tween(500),
+                                                    targetOffsetX = { fullWidth -> -fullWidth } // slide to left
+                                                ))
+                        },
+                        label = "PreguntaSlide"
+                    ) { pregunta ->
+                    Text(
+                        text = pregunta,
+                        fontSize = 50.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF34D9A2),
+                        fontFamily = mogra,
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.Center)
+                            .padding(12.dp)
+                    )}
+                }
+                //Fila imagenes pregunta
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f), // Small weight for image
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Crossfade(
+                        targetState = idPregunta,
+                        label = "TransicionImagen"
+                    ) { targetIdPregunta ->
+
+                        val imageName = "p$targetIdPregunta" // ejemplo: "p1", "p2", "p3"
+                        val imageResId = context.resources.getIdentifier(
+                            imageName,
+                            "drawable",
+                            context.packageName
+                        )
+
+                        val validImage = if (imageResId != 0) imageResId else R.drawable.monstruo_2
+
+                        Image(
+                            painter = painterResource(id = validImage),
+                            contentDescription = "Imagen para pregunta $targetIdPregunta",
+                            modifier = Modifier
+                                .size(400.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(50.dp))
+                //Fila respuestas pregunta
+                Row(
+                    modifier = Modifier.weight(0.5f).selectableGroup()
+                ) {
+                    radioOptions.forEach {
+                        text->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .selectable(selected = (text == selectedOption),
+                                    onClick = { onOptionSelected(text) },
+                                    role = Role.RadioButton
+                                ),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            RadioButton(
+                                selected = (text==selectedOption),
+                                onClick = { onOptionSelected(text) }
+                            )
+                            Text(
+                                text = text,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+
+
             }
-            Box (modifier = Modifier.weight(0.5f).align(Alignment.End)){
+            Box (modifier = Modifier.weight(0.1f).fillMaxHeight()){
 
                 IconButton(
+                    modifier = Modifier.align(Alignment.CenterEnd),
                     onClick = {
-                        if (currentStep<cantidadPreguntas-1){
-                            if(selectedOption != null){
-                                currentStep = currentStep + 1
-                                idPregunta = idPregunta +1
-                                idRespuesta = idRespuesta +1
-                                saveRespuesta()
-                            }else{
-                                mostrarAlerta = true
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            Log.d("estuId", estudiante?.id.toString())
+
+                            if(idPregunta == 1){
+                                val res = Resultado(
+                                    estudianteId = estudiante?.id ?: 0,
+                                    preguntaId = idPregunta,
+                                    respuesta = selectedOption.toString(),
+                                    fecha = current.toString()
+                                )
+                                val id = db.resultadoDao().insertResultado(res).toInt()
+                                val resWithId = res.copy(id = id)
+                                sharedViewModel.resultado = resWithId
                             }
+                            if (currentStep<cantidadPreguntas-1){
+                                if(selectedOption != null){
+                                    currentStep = currentStep + 1
+                                    idPregunta = idPregunta +1
+                                    idRespuesta = idRespuesta +1
+                                    saveRespuesta()
+                                }else{
+                                    mostrarAlerta = true
+                                }
 
-                        }else if(currentStep<cantidadPreguntas){
-                            currentStep = currentStep +1
+                            }else if(currentStep<cantidadPreguntas){
+                                currentStep = currentStep +1
+                            }else if(currentStep == cantidadPreguntas){
+                                withContext(Dispatchers.Main) {
+                                    Log.d("res", sharedViewModel.resultado.toString())
+                                    navController.navigate("results")
+                                }
+                            }
                         }
-
 
                         Log.d("Id Pregunta", idPregunta.toString())
                         Log.d("Cantidad preguntas", cantidadPreguntas.toString())
@@ -321,9 +350,7 @@ fun TestScreen(
                         Log.d("respuesta", respuesta.toString())
                         Log.d("Id respuesta", idRespuesta.toString())
                         Log.d("id estud", estudiante?.id.toString())
-                    },
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
@@ -332,12 +359,9 @@ fun TestScreen(
                         modifier = Modifier.size(48.dp)
                     )
                 }
-
-
             }
 
         }
-
 
     }
 }

@@ -42,7 +42,13 @@ fun AppNavigation(context: Context, viewModelStoreOwner: MainScreen) {
             WelcomeScreen(navController = navController, sharedViewModel)
         }
         composable("test"){
-            TestScreen(navController = navController, context =context, sharedViewModel)
+            TestScreen(navController = navController, context = context, sharedViewModel)
+        }
+        composable("results"){
+            ResultsScreen(navController = navController, context = context, sharedViewModel)
+        }
+        composable("recommendations"){
+            RecommendationsScreen(navController = navController, context = context, sharedViewModel)
         }
     }
 }
