@@ -34,13 +34,6 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
     val estudiante = sharedViewModel.estudiante
     Log.d("est", sharedViewModel.estudiante.toString())
     Log.d("DEBUG", "Welcome screen got estudiante: ${sharedViewModel.estudiante}")
-    val mogra = FontFamily(
-        Font(R.font.mogra_regular, FontWeight.Light),
-        Font(R.font.mogra_regular, FontWeight.Normal),
-        Font(R.font.mogra_regular, FontWeight.Normal, FontStyle.Italic),
-        Font(R.font.mogra_regular, FontWeight.Medium),
-        Font(R.font.mogra_regular, FontWeight.Bold)
-    )
 
     Row (
         modifier = Modifier
@@ -66,7 +59,7 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
                             color = Color(0xFF34D9A2),
                             fontSize = 58.sp,
                             fontWeight = FontWeight.Bold,
-                            fontFamily = mogra
+                            fontFamily = Mogra
                         )
                     ) { append("Hola ") }
                     withStyle(
@@ -74,15 +67,15 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
                             color = Color(0xFFFF5500),
                             fontSize = 58.sp,
                             fontWeight = FontWeight.Bold,
-                            fontFamily = mogra
+                            fontFamily = Mogra
                         )
-                    ) { append(estudiante?.nombre +" ") }
+                    ) { append(estudiante?.nombre + "\n") }
                     withStyle(
                         style = SpanStyle(
                             color = Color(0xFF34D9A2),
                             fontSize = 58.sp,
                             fontWeight = FontWeight.Bold,
-                            fontFamily = mogra
+                            fontFamily = Mogra
                         )
                     ) { append("Soly quiere jugar contigo") }
                 }

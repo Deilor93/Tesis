@@ -43,15 +43,6 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
     // Instancia de base de datos
     val db = remember { DbClass.getDatabase(context) }
 
-    // Importar fuente para letras
-    val mogra = FontFamily(
-        Font(R.font.mogra_regular, FontWeight.Light),
-        Font(R.font.mogra_regular, FontWeight.Normal),
-        Font(R.font.mogra_regular, FontWeight.Normal, FontStyle.Italic),
-        Font(R.font.mogra_regular, FontWeight.Medium),
-        Font(R.font.mogra_regular, FontWeight.Bold)
-    )
-
     var localFocusManager = LocalFocusManager.current
 
     var mostrarAlerta by remember { mutableStateOf(false) }
@@ -82,7 +73,7 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
                                 color = Color(0xFFFF5500),
                                 fontSize = 100.sp,
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = mogra
+                                fontFamily = Mogra
                             )
                         ) { append("JUEGA ") }
                         withStyle(
@@ -90,7 +81,7 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
                                 color = Color(0xFF55DFBE),
                                 fontSize = 100.sp,
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = mogra
+                                fontFamily = Mogra
                             )
                         ) { append("CON ") }
                         withStyle(
@@ -98,7 +89,7 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
                                 color = Color(0xFF34D9A2),
                                 fontSize = 100.sp,
                                 fontWeight = FontWeight.Bold,
-                                fontFamily = mogra
+                                fontFamily = Mogra
                             )
                         ) { append("SOLY") }
                     }

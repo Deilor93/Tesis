@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -38,14 +39,6 @@ fun RecommendationsScreen(
     context: Context,
     sharedViewModel: SharedViewModel
 ){
-
-    val mogra = FontFamily(
-        Font(R.font.mogra_regular, FontWeight.Light),
-        Font(R.font.mogra_regular, FontWeight.Normal),
-        Font(R.font.mogra_regular, FontWeight.Normal, FontStyle.Italic),
-        Font(R.font.mogra_regular, FontWeight.Medium),
-        Font(R.font.mogra_regular, FontWeight.Bold)
-    )
 
     val db = remember { DbClass.getDatabase(context) }
     val clasificacionDao = db.clasificacionDao()
@@ -112,28 +105,44 @@ fun RecommendationsScreen(
         ) {
             resultados.value.forEach { item ->
                 Text(
-                    text = "${item.nombre}: Puntaje ${item.puntuacion} → ${item.clasificacion?.nombre ?: "Cargando..."}",
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    fontSize = 35.sp,
-                    fontFamily = mogra
+                    buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = 40.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = Mogra,
+                            )
+                        ){
+                            append(text = "• ${item.nombre}: \n")
+                        }
+                        withStyle(
+                            style = ParagraphStyle(
+                                textIndent = TextIndent(firstLine = 35.sp)
+                            )
+                        ) {
+                            append(text = "Puntaje ${item.puntuacion} → ${item.clasificacion?.nombre ?: "Cargando..."}")
+                        }
+                    },
+                    modifier = Modifier.padding(vertical = 15.dp),
+                    fontSize = 30.sp,
+                    fontFamily = Mogra
                 )
                 Text(
                     buildAnnotatedString {
                         withStyle(
                             style = ParagraphStyle(
-                                textIndent = TextIndent(firstLine = 20.sp)
+                                textIndent = TextIndent(firstLine = 35.sp)
                             )
                         ) {
                             append(item.recomendacion?.recomendacion ?: "Recomendación no disponible")
                         }
                     },
                     style = TextStyle(fontSize = 20.sp),
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    fontFamily = mogra
+                    modifier = Modifier.padding(bottom = 25.dp),
+                    fontFamily = Mogra
 
                 )
             }
         }
-
     }
 }
