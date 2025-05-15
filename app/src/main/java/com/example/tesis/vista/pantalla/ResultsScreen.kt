@@ -85,16 +85,6 @@ fun ResultsScreen(
                 idPregunta = idPregunta?.plus(1)
                 idResultado = idResultado + 1
             }
-            /*Log.d("idpregunsum", idPregunta.toString())
-            Log.d("pregun", pregunta?.categoriaId.toString())
-            Log.d("Respcor", pregunta?.respuestaCorrecta.toString())
-            Log.d("Resp", resultado?.respuesta.toString())
-            Log.d("Esp", contEsp.toString())
-            Log.d("Mus", contMus.toString())
-            Log.d("Cor", contCor.toString())
-            Log.d("Inter", contInter.toString())
-            Log.d("Intra", contIntra.toString())
-            Log.d("Natu", contNatu.toString())*/
         }
     }
 
@@ -151,7 +141,6 @@ fun ResultsScreen(
                 }
             }
         }
-
     }
 }
 

@@ -28,11 +28,7 @@ import com.example.tesis.vista.viewmodel.SharedViewModel
 @Composable
 fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel) {
 
-    Log.d("DEBUG", "WelcomeScreen ViewModel hash: ${sharedViewModel.hashCode()}")
-
     val estudiante = sharedViewModel.estudiante
-    Log.d("est", sharedViewModel.estudiante.toString())
-    Log.d("DEBUG", "Welcome screen got estudiante: ${sharedViewModel.estudiante}")
 
     Row (
         modifier = Modifier
@@ -79,8 +75,6 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
                     ) { append("Soly quiere jugar contigo") }
                 }
             )
-
-
         }
         Box(modifier = Modifier.fillMaxHeight().weight(0.1f)){
             IconButton(
@@ -98,6 +92,5 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
                 )
             }
         }
-
     }
 }

@@ -149,15 +149,8 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
                                     val est = Estudiante(nombre = nombreEstudiante, codigo = codigoEstudiante)
                                     val id = db.estudianteDao().insertEstudiante(est).toInt()
                                     val estWithId = est.copy(id = id)
-
-                                    Log.d("id", id.toString())
-                                    Log.d("estwid", estWithId.toString())
-
                                     withContext(Dispatchers.Main) {
                                         sharedViewModel.estudiante = estWithId
-                                        Log.d("DEBUG", "Estudiante set before nav: ${sharedViewModel.estudiante}")
-                                        Log.d("DEBUG", "IntroScreen ViewModel hash: ${sharedViewModel.hashCode()}")
-
                                         navController.navigate("welcome")
                                     }
                                 }else{
@@ -175,7 +168,6 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
                     }
                 }
 
-
                 Column {
                     Image(
                         painter = painterResource(id = R.drawable.monstruo_2),
@@ -185,10 +177,6 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
                     )
                 }
             }
-
         }
-
     }
-
-
 }

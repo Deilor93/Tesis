@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +39,7 @@ import com.example.tesis.R
 import com.example.tesis.logica.DbClass
 import com.example.tesis.logica.Resultado
 import com.example.tesis.vista.component.PreguntaArrastrarYUbicar
+import com.example.tesis.vista.componente.SeleccionMultiple
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,7 +52,6 @@ import com.example.tesis.vista.viewmodel.SharedViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TestScreen(
     navController: NavController,
@@ -129,8 +128,6 @@ fun TestScreen(
             try {
                 val pregunta = db.preguntaDao().getPreguntaById(idPregunta)
 
-                Log.d("Preg", pregunta.toString())
-                Log.d("DEBUG", "idEstudiante = ${estudiante?.id.toString()}, idPregunta = $idPregunta")
                 if (estudiante != null && pregunta != null) {
                     val resultado = Resultado(
                         estudianteId = estudiante.id,
@@ -153,17 +150,16 @@ fun TestScreen(
     Surface (modifier = Modifier
         .fillMaxSize(),
         color = Color(0xFFFFFF99)
-    ){
-        Row(modifier = Modifier.fillMaxSize()){
-        //Columna contenedora
-            Column (modifier = Modifier.fillMaxHeight().weight(0.9f)){
+    ) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            //Columna contenedora
+            Column(modifier = Modifier.fillMaxHeight().weight(0.9f)) {
                 //Fila superior para mapa y Soly
                 Row(
                     modifier = Modifier.fillMaxWidth().weight(0.3f),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.Top
-                ){
-
+                ) {
                     //Columna mapa
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -174,9 +170,9 @@ fun TestScreen(
                         StepsProgressBar(
                             modifier = Modifier.fillMaxWidth(),
                             numberOfSteps = cantidadPreguntas,
-                            currentStep = currentStep)
+                            currentStep = currentStep
+                        )
                     }
-
                     //Columna Soly
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -193,177 +189,60 @@ fun TestScreen(
                         )
                     }
                 }
-                //Fila enunciado pregunta
+                //Fila pregunta
                 Row(
                     modifier = Modifier.weight(1f)
                 ) {
-                    /*SeleccionMultiple(
-                        context = context,
-                        idPregunta = idPregunta,
-                        questionText = preguntaText,
-                        radioOptions = radioOptions,
-                        selectedOption = selectedOption,
-                        onOptionSelected = onOptionSelected
-                    )
 
-                    RespuestaAbierta(context = context,
-                        idPregunta = 4,
-                        preguntaText = preguntaText,
-                        radioOptions = radioOptions,
-                        respuestas = userAnswers,
-                        onAnswersChanged = { userAnswers = it }
-                    )
-
-                    PreguntaPatron(
-                        context = context,
-                        idPregunta = idPregunta,
-                        preguntaText = preguntaText,
-                        respuestaPatron = userPattern,
-                        onPatternChanged = { userPattern = it },
-                        gridSize = 4
-                    )*/
-
-                    PreguntaArrastrarYUbicar(
-                        context = context,
-                        idPregunta = 10,
-                        preguntaText = "Arrastra y ubica los objetos según la imagen",
-                        items = items,
-                        gridSize = 4,
-                        onPositionsSaved = { resultString ->
-                            //sharedViewModel.saveDragMatchResult(resultString)
-                        }
-                    )
-
-
-                    /*AnimatedContent(
-                        targetState = preguntaText,
-                        transitionSpec = {
-                            slideInHorizontally(
-                                                    animationSpec = tween(500),
-                                                    //deslizar desde la derecha
-                                                    initialOffsetX = { fullWidth -> fullWidth }
-                                                ).togetherWith(
-                                slideOutHorizontally(
-                                                    animationSpec = tween(500),
-                                                    //deslizar hacia la izquierda
-                                                    targetOffsetX = { fullWidth -> -fullWidth }
-                                                ))
-                        },
-                        label = "PreguntaSlide"
-                    ) { pregunta ->
-                    Text(
-                        text = pregunta,
-                        fontSize = 50.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF34D9A2),
-                        fontFamily = Mogra,
-                        modifier = Modifier
-                            .wrapContentSize(Alignment.Center)
-                            .padding(12.dp)
-                    )}
-                }
-                //Fila imagenes pregunta
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val imageName = "p$idPregunta"
-                    val imageResId = context.resources.getIdentifier(
-                        imageName,
-                        "drawable",
-                        context.packageName
-                    )
-                    val validImage = if (imageResId != 0) imageResId else R.drawable.monstruo_2
-
-                    //Overlay del patron de imagen para pregunta 13
-                    if (idPregunta == 13) {
-                        Box(modifier = Modifier.size(400.dp)) {
-                            Image(
-                                painter = painterResource(id = validImage),
-                                contentDescription = "Imagen para pregunta $idPregunta",
-                                modifier = Modifier.fillMaxSize()
-                            )
-
-                            PatronPregunta(
-                                columns = 6,
-                                rows = 7,
-                                modifier = Modifier.fillMaxSize(),
-                                onPatternComplete = { pattern ->
-                                    onOptionSelected(pattern)
-                                    Log.d("PatronPregunta", "User pattern: $pattern")
-                                }
-                            )
-                        }
-                    } else {
-                        Image(
-                            painter = painterResource(id = validImage),
-                            contentDescription = "Imagen para pregunta $idPregunta",
-                            modifier = Modifier.size(400.dp)
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(50.dp))
-                //Fila respuestas pregunta
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(0.5f)
-                ) {
+                    //Fila respuestas pregunta
                     when (idPregunta) {
                         10, 11, 12 -> {
-                            var textInput by remember(idPregunta) { mutableStateOf("") }
+                            /*
+                        RespuestaAbierta(context = context,
+                            idPregunta = 4,
+                            preguntaText = preguntaText,
+                            radioOptions = radioOptions,
+                            respuestas = userAnswers,
+                            onAnswersChanged = { userAnswers = it }
+                        )
 
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                TextField(
-                                    value = textInput,
-                                    onValueChange = {
-                                        textInput = it
-                                        onOptionSelected(it)
-                                    },
-                                    label = { Text("Escribe tu respuesta") },
-                                    singleLine = true
-                                )
-                            }
-                        }
-                        else -> {
-                            // Default — radio buttons
-                            Row(
-                                modifier = Modifier.selectableGroup()
-                            ) {
-                                radioOptions.forEach { text ->
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth(0.5f)
-                                            .selectable(
-                                                selected = (text == selectedOption),
-                                                onClick = { onOptionSelected(text) },
-                                                role = Role.RadioButton
-                                            ),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        RadioButton(
-                                            selected = (text == selectedOption),
-                                            onClick = { onOptionSelected(text) }
-                                        )
-                                        Text(
-                                            text = text,
-                                            fontSize = 20.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
+                        PreguntaPatron(
+                            context = context,
+                            idPregunta = idPregunta,
+                            preguntaText = preguntaText,
+                            respuestaPatron = userPattern,
+                            onPatternChanged = { userPattern = it },
+                            gridSize = 4
+                        )*/
+
+                            PreguntaArrastrarYUbicar(
+                                context = context,
+                                idPregunta = 10,
+                                preguntaText = "Arrastra y ubica los objetos según la imagen",
+                                items = items,
+                                gridSize = 4,
+                                onPositionsSaved = { resultString ->
+                                    //sharedViewModel.saveDragMatchResult(resultString)
                                 }
-                            }
+                            )
                         }
-                    }*/
+
+                        else -> {
+                            // Preguntas seleccion
+                            SeleccionMultiple(
+                                context = context,
+                                idPregunta = idPregunta,
+                                questionText = preguntaText,
+                                radioOptions = radioOptions,
+                                selectedOption = selectedOption,
+                                onOptionSelected = onOptionSelected
+                            )
+                        }
+                    }
                 }
+
             }
-            Box (modifier = Modifier.weight(0.1f).fillMaxHeight()){
+            Box(modifier = Modifier.weight(0.1f).fillMaxHeight()) {
 
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterEnd),
@@ -371,7 +250,7 @@ fun TestScreen(
                         coroutineScope.launch {
                             Log.d("estuId", estudiante?.id.toString())
                             withContext(Dispatchers.IO) {
-                                if(idPregunta == 1){
+                                if (idPregunta == 1) {
                                     val res = Resultado(
                                         estudianteId = estudiante?.id ?: 0,
                                         preguntaId = idPregunta,
@@ -382,18 +261,18 @@ fun TestScreen(
                                     val resWithId = res.copy(id = id)
                                     sharedViewModel.resultado = resWithId
                                 }
-                                if (currentStep<cantidadPreguntas-1){
-                                    if(selectedOption != null){
+                                if (currentStep < cantidadPreguntas - 1) {
+                                    if (selectedOption != null) {
                                         currentStep = currentStep + 1
-                                        idPregunta = idPregunta +1
-                                        idRespuesta = idRespuesta +1
+                                        idPregunta = idPregunta + 1
+                                        idRespuesta = idRespuesta + 1
                                         saveRespuesta()
-                                    }else{
+                                    } else {
                                         mostrarAlerta = true
                                     }
-                                }else if(currentStep<cantidadPreguntas){
-                                    currentStep = currentStep +1
-                                }else if(currentStep == cantidadPreguntas){
+                                } else if (currentStep < cantidadPreguntas) {
+                                    currentStep = currentStep + 1
+                                } else if (currentStep == cantidadPreguntas) {
                                     withContext(Dispatchers.Main) {
                                         Log.d("res", sharedViewModel.resultado.toString())
                                         navController.navigate("results")
@@ -401,12 +280,6 @@ fun TestScreen(
                                 }
                             }
                         }
-                        Log.d("Id Pregunta", idPregunta.toString())
-                        Log.d("Cantidad preguntas", cantidadPreguntas.toString())
-                        Log.d("Pregunta actual", currentStep.toString())
-                        Log.d("respuesta", respuesta.toString())
-                        Log.d("Id respuesta", idRespuesta.toString())
-                        Log.d("id estud", estudiante?.id.toString())
                     }
                 ) {
                     Icon(
