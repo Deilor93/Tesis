@@ -37,6 +37,7 @@ fun PreguntaRespuestaAbierta(
         Spacer(modifier = Modifier.height(16.dp))
 
         ImagenPregunta(
+            context = context,
             idPregunta = idPregunta,
             modifier = Modifier
                 .size(300.dp)

@@ -11,9 +11,9 @@ import com.example.tesis.R
 //Cargar imagen dinamicamente basado en el id de la pregunta
 @Composable
 fun ImagenPregunta(
+    modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     idPregunta: Int,
-    modifier: Modifier = Modifier
 ) {
     val imageName = "p$idPregunta"
     val imageResId = context.resources.getIdentifier(

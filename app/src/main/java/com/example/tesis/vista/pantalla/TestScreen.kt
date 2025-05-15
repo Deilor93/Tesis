@@ -46,7 +46,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import com.example.tesis.vista.componente.PreguntaPatron
 import com.example.tesis.vista.componente.StepsProgressBar
 import com.example.tesis.vista.modelo.DraggableItem
 import com.example.tesis.vista.viewmodel.SharedViewModel
