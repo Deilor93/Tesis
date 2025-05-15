@@ -1,4 +1,4 @@
-package com.example.tesis.vista
+package com.example.tesis.vista.pantalla
 
 import android.content.Context
 import android.util.Log
@@ -19,19 +19,17 @@ import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.tesis.R
 import com.example.tesis.logica.Clasificacion
 import com.example.tesis.logica.DbClass
 import com.example.tesis.logica.Recomendacion
+import com.example.tesis.vista.util.Mogra
+import com.example.tesis.vista.viewmodel.SharedViewModel
 
 @Composable
 fun RecommendationsScreen(

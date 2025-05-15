@@ -1,4 +1,4 @@
-package com.example.tesis.vista
+package com.example.tesis.vista.util
 
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily

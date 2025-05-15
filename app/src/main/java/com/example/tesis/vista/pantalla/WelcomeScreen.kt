@@ -1,4 +1,4 @@
-package com.example.tesis.vista
+package com.example.tesis.vista.pantalla
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -16,15 +16,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tesis.R
+import com.example.tesis.vista.util.Mogra
+import com.example.tesis.vista.viewmodel.SharedViewModel
 
 @Composable
 fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel) {

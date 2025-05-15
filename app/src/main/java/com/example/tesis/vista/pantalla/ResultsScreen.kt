@@ -1,15 +1,13 @@
-package com.example.tesis.vista
+package com.example.tesis.vista.pantalla
 
 import android.content.Context
-import android.util.Log
+import android.graphics.Paint
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -28,21 +26,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.tesis.R
 import com.example.tesis.logica.DbClass
+import com.example.tesis.vista.util.Mogra
+import com.example.tesis.vista.viewmodel.SharedViewModel
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -235,9 +228,9 @@ fun IntelligenceRadarChart(
         }
 
         //Etiquetas de texto para cada inteligencia
-        val textPaint = android.graphics.Paint().apply {
+        val textPaint = Paint().apply {
             color = android.graphics.Color.BLACK
-            textAlign = android.graphics.Paint.Align.CENTER
+            textAlign = Paint.Align.CENTER
             textSize = 20f
             isFakeBoldText = true
             isAntiAlias = true

@@ -1,4 +1,4 @@
-package com.example.tesis.vista
+package com.example.tesis.vista.pantalla
 
 import android.content.Context
 import android.os.Build
@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.tesis.vista.viewmodel.SharedViewModel
 
 class MainScreen : ComponentActivity() {
 

@@ -1,4 +1,4 @@
-package com.example.tesis.vista
+package com.example.tesis.vista.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
