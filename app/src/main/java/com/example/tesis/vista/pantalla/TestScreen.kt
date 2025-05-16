@@ -39,6 +39,8 @@ import com.example.tesis.R
 import com.example.tesis.logica.DbClass
 import com.example.tesis.logica.Resultado
 import com.example.tesis.vista.component.PreguntaArrastrarYUbicar
+import com.example.tesis.vista.componente.PreguntaPatronInteractivo
+import com.example.tesis.vista.componente.PreguntaRespuestaAbierta
 import com.example.tesis.vista.componente.SeleccionMultiple
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,6 +72,7 @@ fun TestScreen(
     var idRespuesta by remember{mutableStateOf(1)}
 
     var preguntaText by remember { mutableStateOf("")}
+    var tipoPregunta by remember {mutableStateOf(0)}
     val cantidadPreguntas = preguntaDao.getCantidadPreguntas()
 
     var respuesta by remember {mutableStateOf("")}
@@ -84,6 +87,7 @@ fun TestScreen(
     val (selectedOption, onOptionSelected) = remember(idPregunta) { mutableStateOf<String?>(null) }
     var userAnswers by remember { mutableStateOf(List(radioOptions.size) { "" }) }
     var userPattern by remember { mutableStateOf("") }
+    var userDragMatchResult by remember { mutableStateOf("") }
 
     val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
     val current = LocalDateTime.now().format(formatter)
@@ -103,7 +107,9 @@ fun TestScreen(
 
     //Actualizar pregunta, respuesta y seleccion dinamicamente
     LaunchedEffect(idPregunta, idRespuesta) {
-        preguntaText = preguntaDao.getTextoPreguntaById(idPregunta)
+        val pregunta = preguntaDao.getPreguntaById(idPregunta)
+        preguntaText = pregunta?.pregunta ?: ""
+        tipoPregunta = pregunta?.tipoPregunta ?: 0
         respuesta = respuestaDao.getRespuestaById(idRespuesta)
     }
 
@@ -123,16 +129,31 @@ fun TestScreen(
         )
     }
 
+    val isAnswerGiven = when (tipoPregunta) {
+        1 -> selectedOption != null
+        2 -> userPattern.isNotBlank()
+        3 -> userAnswers.any { it.isNotBlank() }
+        //4 -> true
+        else -> false
+    }
+
     fun saveRespuesta() {
-        CoroutineScope(Dispatchers.IO).launch IconButton@{
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val pregunta = db.preguntaDao().getPreguntaById(idPregunta)
+                val answerToSave = when (tipoPregunta) {
+                    1 -> selectedOption ?: ""
+                    2 -> userPattern
+                    3 -> userAnswers.joinToString(";")
+                    4 -> userDragMatchResult
+                    else -> ""
+                }
 
                 if (estudiante != null && pregunta != null) {
                     val resultado = Resultado(
                         estudianteId = estudiante.id,
                         preguntaId = idPregunta,
-                        respuesta = selectedOption.toString(),
+                        respuesta = answerToSave,
                         fecha = current.toString()
                     )
                     resultadoDao.insertResultado(resultado)
@@ -146,6 +167,7 @@ fun TestScreen(
             }
         }
     }
+
 
     Surface (modifier = Modifier
         .fillMaxSize(),
@@ -166,7 +188,6 @@ fun TestScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.weight(1f)
                     ) {
-
                         StepsProgressBar(
                             modifier = Modifier.fillMaxWidth(),
                             numberOfSteps = cantidadPreguntas,
@@ -193,42 +214,10 @@ fun TestScreen(
                 Row(
                     modifier = Modifier.weight(1f)
                 ) {
-
-                    //Fila respuestas pregunta
-                    when (idPregunta) {
-                        10, 11, 12 -> {
-                            /*
-                        RespuestaAbierta(context = context,
-                            idPregunta = 4,
-                            preguntaText = preguntaText,
-                            radioOptions = radioOptions,
-                            respuestas = userAnswers,
-                            onAnswersChanged = { userAnswers = it }
-                        )
-
-                        PreguntaPatron(
-                            context = context,
-                            idPregunta = idPregunta,
-                            preguntaText = preguntaText,
-                            respuestaPatron = userPattern,
-                            onPatternChanged = { userPattern = it },
-                            gridSize = 4
-                        )*/
-
-                            PreguntaArrastrarYUbicar(
-                                context = context,
-                                idPregunta = 10,
-                                preguntaText = "Arrastra y ubica los objetos según la imagen",
-                                items = items,
-                                gridSize = 4,
-                                onPositionsSaved = { resultString ->
-                                    //sharedViewModel.saveDragMatchResult(resultString)
-                                }
-                            )
-                        }
-
-                        else -> {
-                            // Preguntas seleccion
+                    //Seleccion de pregunta basada en tipo
+                    when (tipoPregunta) {
+                        1-> {
+                            // Preguntas seleccion multiple
                             SeleccionMultiple(
                                 context = context,
                                 idPregunta = idPregunta,
@@ -238,6 +227,40 @@ fun TestScreen(
                                 onOptionSelected = onOptionSelected
                             )
                         }
+                        2 -> {
+                            // Pregunta de patron interactivo
+                            PreguntaPatronInteractivo(
+                                context = context,
+                                idPregunta = idPregunta,
+                                preguntaText = preguntaText,
+                                currentPattern = userPattern,
+                                onPatternChanged = { userPattern = it },
+                            )
+                        }
+                        3 -> {
+                            // Pregunta de respuesta abierta
+                            PreguntaRespuestaAbierta(context = context,
+                                idPregunta = 4,
+                                preguntaText = preguntaText,
+                                radioOptions = radioOptions,
+                                respuestas = userAnswers,
+                                onAnswersChanged = { userAnswers = it }
+                            )
+                        }
+                        4 -> {
+                            // Pregunta de mover objetos
+                            PreguntaArrastrarYUbicar(
+                                context = context,
+                                idPregunta = idPregunta,
+                                preguntaText = preguntaText,
+                                items = items,
+                                gridSize = 4,
+                                onPositionsSaved = { resultString ->
+                                    userDragMatchResult = resultString
+                                }
+                            )
+                        }
+
                     }
                 }
 
@@ -262,7 +285,7 @@ fun TestScreen(
                                     sharedViewModel.resultado = resWithId
                                 }
                                 if (currentStep < cantidadPreguntas - 1) {
-                                    if (selectedOption != null) {
+                                    if (isAnswerGiven) {
                                         currentStep = currentStep + 1
                                         idPregunta = idPregunta + 1
                                         idRespuesta = idRespuesta + 1
@@ -270,8 +293,10 @@ fun TestScreen(
                                     } else {
                                         mostrarAlerta = true
                                     }
-                                } else if (currentStep < cantidadPreguntas) {
+                                }
+                                else if (currentStep < cantidadPreguntas) {
                                     currentStep = currentStep + 1
+                                    Log.d("patron", userPattern)
                                 } else if (currentStep == cantidadPreguntas) {
                                     withContext(Dispatchers.Main) {
                                         Log.d("res", sharedViewModel.resultado.toString())

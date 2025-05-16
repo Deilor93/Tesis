@@ -9,10 +9,6 @@ import androidx.room.Query
 @Dao
 interface PreguntaDao {
 
-    data class preguntatxt(
-        @ColumnInfo(name = "pregunta") val pregunta: String?
-    )
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPregunta(pregunta: Pregunta)
 
@@ -24,6 +20,9 @@ interface PreguntaDao {
 
     @Query("SELECT pregunta FROM preguntas WHERE id = :id")
     fun getTextoPreguntaById(id: Int): String
+
+    @Query("SELECT pregunta FROM preguntas WHERE id = :id")
+    fun getTipoPreguntaById(id: Int): Int
 
     @Query("SELECT COUNT(id) FROM preguntas")
     fun getCantidadPreguntas(): Int

@@ -3,11 +3,9 @@ package com.example.tesis.vista.componente
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -17,17 +15,17 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import kotlin.math.hypot
 
-//Patron para pregunta copiar imagen
 @Composable
 fun FlexiblePatternGrid(
-    gridSize: Int = 3,
+    rows: Int,
+    columns: Int,
     initialPattern: String,
     onPatternCompleted: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    dotRadius: Float = 15f
 ) {
     val selectedDots = remember { mutableStateListOf<Int>() }
     val dotCenters = remember { mutableStateListOf<Offset>() }
-    val dotRadius = 30f
 
     LaunchedEffect(initialPattern) {
         selectedDots.clear()
@@ -56,20 +54,25 @@ fun FlexiblePatternGrid(
             },
         contentAlignment = Alignment.Center
     ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
+        Canvas(modifier = Modifier.fillMaxHeight().fillMaxWidth(0.5f)) {
             dotCenters.clear()
-            val spacingX = size.width / (gridSize + 1)
-            val spacingY = size.height / (gridSize + 1)
+            /**rows es 7 columnas es 6, se fijo el valor por el requerimiento de la pregunta pero el
+             *  codigo sigue siendo dinamico
+            */
+            val marginXFactor = 0.05f
+            val marginYFactor = 0.15f
+            val spacingX = size.width * (1 - marginXFactor * 2) / (6 - 1)
+            val spacingY = size.height * (1 - marginYFactor * 2) / (7 - 1)
 
-            for (i in 0 until gridSize) {
-                for (j in 0 until gridSize) {
-                    val x = spacingX * (j + 1)
-                    val y = spacingY * (i + 1)
+            for (i in 0 until 7) {
+                for (j in 0 until 6) {
+                    val x = size.width * marginXFactor + j * spacingX
+                    val y = size.height * marginYFactor + i * spacingY
                     val center = Offset(x, y)
                     dotCenters.add(center)
 
                     drawCircle(
-                        color = if (selectedDots.contains(i * gridSize + j)) Color(0xFF55DFBE) else Color.LightGray,
+                        color = if (selectedDots.contains(i * 6 + j)) Color(0xFF55DFBE) else Color.LightGray,
                         radius = dotRadius,
                         center = center,
                         style = Stroke(width = 4f)

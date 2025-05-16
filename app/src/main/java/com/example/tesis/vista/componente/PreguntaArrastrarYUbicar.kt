@@ -1,24 +1,21 @@
 package com.example.tesis.vista.component
 
-import ImagenArrastrable
 import android.content.Context
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.tesis.R
 import com.example.tesis.vista.componente.AnimacionTexto
+import com.example.tesis.vista.componente.ImagenArrastrable
 import com.example.tesis.vista.modelo.DraggableItem
 import com.example.tesis.vista.modelo.GridCell
+import com.example.tesis.vista.util.ImagenPregunta
 
 @Composable
 fun PreguntaArrastrarYUbicar(
@@ -26,95 +23,98 @@ fun PreguntaArrastrarYUbicar(
     idPregunta: Int,
     preguntaText: String,
     items: List<DraggableItem>,
-    gridSize: Int = 4,
+    gridSize: Int,
     onPositionsSaved: (String) -> Unit
 ) {
-    val gridCells = remember { mutableStateListOf<GridCell>() }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Question text
         AnimacionTexto(preguntaText)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Row with image and grid inside the same container
+        val cellSizePx = 100f
+        val gridCells = remember {
+            val cells = mutableListOf<GridCell>()
+            var index = 0
+            for (row in 0 until gridSize) {
+                for (col in 0 until gridSize) {
+                    val x = col * cellSizePx
+                    val y = row * cellSizePx
+                    cells.add(GridCell(index = index, row = row, column = col, position = Offset(x, y)))
+                    index++
+                }
+            }
+            cells
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            // Reference image based on questionId
-            val imageName = "p$idPregunta"
-            val imageResId = context.resources.getIdentifier(
-                imageName, "drawable", context.packageName
-            )
-            val validImage = if (imageResId != 0) imageResId else R.drawable.monstruo_2
-
-            Image(
-                painter = painterResource(id = validImage),
-                contentDescription = "Referencia $idPregunta",
+            ImagenPregunta(
+                context = context,
+                idPregunta = idPregunta,
                 modifier = Modifier
                     .size(300.dp)
-                    .padding(8.dp)
+                    .padding(vertical = 16.dp)
             )
 
-            // Grid and objects sharing same Box
+            // Grid area with Canvas and items over it
             Box(
                 modifier = Modifier
-                    .size(300.dp)
-                    .padding(8.dp)
+                    .size((gridSize * cellSizePx).dp)
             ) {
-                var cellSize by remember { mutableStateOf(0f) }
-
-                // Draw the grid
                 Canvas(modifier = Modifier.fillMaxSize()) {
-                    cellSize = size.width / gridSize
-                    gridCells.clear()
-                    for (row in 0 until gridSize) {
-                        for (col in 0 until gridSize) {
-                            val x = col * cellSize + cellSize / 2
-                            val y = row * cellSize + cellSize / 2
-                            gridCells.add(GridCell(row, col, Offset(x, y)))
-                            drawRect(
-                                color = Color.Black,
-                                topLeft = Offset(col * cellSize, row * cellSize),
-                                size = androidx.compose.ui.geometry.Size(cellSize, cellSize),
-                                style = Stroke(width = 2f)
-                            )
-                        }
+                    gridCells.forEach { cell ->
+                        drawRect(
+                            color = Color.Black,
+                            topLeft = cell.position,
+                            size = Size(cellSizePx, cellSizePx),
+                            style = Stroke(width = 2f)
+                        )
                     }
                 }
 
-                // Draggable objects start below the grid inside the same box
-                items.forEachIndexed { index, item ->
+                // Draggable items over the grid
+                items.forEach { item ->
                     ImagenArrastrable(
                         item = item,
                         gridCells = gridCells,
-                        initialOffset = Offset(
-                            x = 20f + index * 90f,
-                            y = 320f // visually below grid inside same Box
-                        )
+                        allItems = items,
+                        // If not assigned, stay at the initial external position below the grid
+                        initialOffset = item.assignedCell?.let {
+                            Offset(it.position.x + cellSizePx / 2 - 40f, it.position.y + cellSizePx / 2 - 40f)
+                        } ?: Offset(0f, (gridSize * cellSizePx + 100f))
+                        ,
+                        cellSize = cellSizePx
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Button(onClick = {
-            val resultString = items.joinToString(",") { item ->
-                val assigned = item.assignedCell
-                "${item.id}:${assigned?.row}-${assigned?.column}"
+        // Row showing the draggable items at the bottom if not assigned
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            items.filter { it.assignedCell == null }.forEach { item ->
+                Column(modifier = Modifier.weight(1f)){
+                    ImagenArrastrable(
+                        item = item,
+                        gridCells = gridCells,
+                        allItems = items,
+                        initialOffset = Offset(0f, (gridSize * cellSizePx + 100f)),
+                        cellSize = cellSizePx
+                    )
+                }
             }
-            onPositionsSaved(resultString)
-        }) {
-            Text("Guardar posiciones")
         }
     }
 }
-
 

@@ -2,9 +2,11 @@ package com.example.tesis.vista.componente
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,51 +21,64 @@ import com.example.tesis.vista.util.ImagenPregunta
 
 //Pregunta patron
 @Composable
-fun PreguntaPatron(
+fun PreguntaPatronInteractivo(
     context: Context,
     idPregunta: Int,
     preguntaText: String,
-    respuestaPatron: String,
+    currentPattern: String,
     onPatternChanged: (String) -> Unit,
-    gridSize: Int = 3
+    rows: Int = 4,
+    columns: Int = 4,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Question Text
         AnimacionTexto(preguntaText)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Image and Pattern side by side
+        // Row with image and pattern grid side by side
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+
             ImagenPregunta(
                 context = context,
                 idPregunta = idPregunta,
                 modifier = Modifier
-                    .size(250.dp)
-                    .padding(8.dp)
+                    .size(300.dp)
+                    .padding(vertical = 16.dp)
             )
 
-            FlexiblePatternGrid(
-                gridSize = gridSize,
-                initialPattern = respuestaPatron,
-                onPatternCompleted = onPatternChanged,
+            // Pattern grid
+            Box(
                 modifier = Modifier
-                    .size(250.dp) // fixed size matching image
-            )
+                    .weight(1f)
+                    .padding(8.dp)
+                    .fillMaxHeight(0.8f)
+            ) {
+                FlexiblePatternGrid(
+                    rows = rows,
+                    columns = columns,
+                    initialPattern = currentPattern,
+                    onPatternCompleted = onPatternChanged,
+                    dotRadius = 20f, // smaller dots
+                )
+            }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { onPatternChanged("") }) {
-            Text("Limpiar patrón")
+        Button(
+            onClick = { onPatternChanged("") },
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Text("Borrar patrón")
         }
     }
 }

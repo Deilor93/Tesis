@@ -4,7 +4,8 @@ import android.content.Context
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Categoria::class, Pregunta::class, Estudiante::class, Resultado::class, Recomendacion::class, Clasificacion::class, Respuesta::class], version = 3, exportSchema = false)
+@Database(entities = [Categoria::class, Pregunta::class, Estudiante::class, Resultado::class,
+    Recomendacion::class, Clasificacion::class, Respuesta::class], version = 4, exportSchema = false)
 
 abstract class DbClass : RoomDatabase() {
     abstract fun categoriaDao(): CategoriaDao
@@ -45,14 +46,14 @@ abstract class DbClass : RoomDatabase() {
                             db.execSQL("INSERT INTO clasificaciones (id, nombre) VALUES (3, 'Posible proeficiencia');")
 
                             // Insert into preguntas
-                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId) VALUES (1, 'Soly quiere saber si tienes libros o revistas en casa', 'Si', 1);")
-                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId) VALUES (2, 'Cuentale a Soly si tienes instrumentos musicales en casa', 'Si', 4);")
-                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId) VALUES (3, 'Dile a Soly si tienes juguetes en casa', 'Si', 7);")
-                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId) VALUES (4, 'Disfrutas leyendo cuentos o libros?', 'Si', 1);")
-                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId) VALUES (5, 'Cuando juegas con amigos o amigas, cuentas o inventas historias para divertirse?', 'Si', 1);")
-                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId) VALUES (6, 'Te gustan las clases de español?', 'Si', 1);")
-                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId) VALUES (7, 'Te gusta hablar con amigos y familia?', 'Si', 1);")
-                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId) VALUES (8, 'Leer te parece fácil o difícil?', 'Fácil', 1);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (1, 'Soly quiere saber si tienes libros o revistas en casa', 'Si', 1, 1);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (2, 'Cuentale a Soly si tienes instrumentos musicales en casa', 'Si', 4, 4);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (3, 'Dile a Soly si tienes juguetes en casa', 'Si', 7, 1);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (4, 'Disfrutas leyendo cuentos o libros?', 'Si', 1, 1);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (5, 'Cuando juegas con amigos o amigas, cuentas o inventas historias para divertirse?', 'Si', 1, 1);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (6, 'Te gustan las clases de español?', 'Si', 1, 1);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (7, 'Te gusta hablar con amigos y familia?', 'Si', 1, 1);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (8, 'Leer te parece fácil o difícil?', 'Fácil', 1, 1);")
 
                             // Insert into respuestas
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (1, 1, 'Si,No');")

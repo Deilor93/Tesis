@@ -19,5 +19,6 @@ data class Pregunta(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val pregunta: String,
     val respuestaCorrecta: String,
-    val categoriaId: Int
+    val categoriaId: Int,
+    val tipoPregunta: Int
 )

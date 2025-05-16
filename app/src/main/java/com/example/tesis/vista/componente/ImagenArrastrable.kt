@@ -1,14 +1,11 @@
+package com.example.tesis.vista.componente
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -25,9 +22,22 @@ import kotlin.math.roundToInt
 fun ImagenArrastrable(
     item: DraggableItem,
     gridCells: List<GridCell>,
-    initialOffset: Offset
+    allItems: List<DraggableItem>,
+    initialOffset: Offset,
+    cellSize: Float
 ) {
+    // Offset must be persistent even if the Composable recomposes, use rememberUpdatedState pattern
     var offset by remember { mutableStateOf(initialOffset) }
+
+    // Ensure offset updates when the item has an assignedCell during composition
+    LaunchedEffect(item.assignedCell) {
+        item.assignedCell?.let { cell ->
+            offset = Offset(
+                cell.position.x + (cellSize / 2) - 60f,
+                cell.position.y + (cellSize / 2) - 60f
+            )
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -40,16 +50,24 @@ fun ImagenArrastrable(
                         offset += dragAmount
                     },
                     onDragEnd = {
-                        // Snap to nearest cell
-                        val nearestCell = gridCells.minByOrNull { cell ->
+                        // Find nearest unoccupied cell
+                        val availableCells = gridCells.filter { cell ->
+                            allItems.none { it.assignedCell?.index == cell.index }
+                        }
+
+                        val nearestCell = availableCells.minByOrNull { cell ->
                             hypot(
-                                cell.position.x - offset.x - 40f,
-                                cell.position.y - offset.y - 40f
+                                (cell.position.x + cellSize / 2) - (offset.x + 60f),
+                                (cell.position.y + cellSize / 2) - (offset.y + 60f)
                             )
                         }
-                        nearestCell?.let {
-                            item.assignedCell = it
-                            offset = Offset(it.position.x - 40f, it.position.y - 40f)
+
+                        nearestCell?.let { cell ->
+                            item.assignedCell = cell
+                            offset = Offset(
+                                cell.position.x + (cellSize / 2) - 60f,
+                                cell.position.y + (cellSize / 2) - 60f
+                            )
                         }
                     }
                 )
@@ -59,7 +77,7 @@ fun ImagenArrastrable(
         Image(
             painter = painterResource(id = item.imageResId),
             contentDescription = item.id,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.size(80.dp)
         )
     }
 }
