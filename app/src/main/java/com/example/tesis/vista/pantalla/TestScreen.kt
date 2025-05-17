@@ -88,7 +88,6 @@ fun TestScreen(
     val (selectedOption, onOptionSelected) = remember(idPregunta) { mutableStateOf<String?>(null) }
     var userAnswers by remember { mutableStateOf(List(radioOptions.size) { "" }) }
     var userPattern by remember { mutableStateOf("") }
-    var userDragMatchResult by remember { mutableStateOf("") }
 
     val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
     val current = LocalDateTime.now().format(formatter)
@@ -263,10 +262,7 @@ fun TestScreen(
                                 idPregunta = idPregunta,
                                 preguntaText = preguntaText,
                                 items = amigosSoly,
-                                gridSize = 4,
-                                onPositionsSaved = { resultString ->
-                                    userDragMatchResult = resultString
-                                }
+                                gridSize = 4
                             )
                         }
 
