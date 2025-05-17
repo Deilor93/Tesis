@@ -50,6 +50,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import com.example.tesis.vista.componente.StepsProgressBar
 import com.example.tesis.vista.modelo.DraggableItem
+import com.example.tesis.vista.util.FormatUtil
 import com.example.tesis.vista.viewmodel.SharedViewModel
 
 
@@ -94,7 +95,7 @@ fun TestScreen(
 
     var mostrarAlerta by remember { mutableStateOf(false) }
 
-    val items = remember {
+    val amigosSoly = remember {
         mutableStateListOf(
             DraggableItem("A", R.drawable.amigo_1),
             DraggableItem("B", R.drawable.amigo_2),
@@ -133,9 +134,16 @@ fun TestScreen(
         1 -> selectedOption != null
         2 -> userPattern.isNotBlank()
         3 -> userAnswers.any { it.isNotBlank() }
-        //4 -> true
+        4 -> {
+            // Verifica que todos los arrqastrables estan dentro del grid de casillas visibles
+            val gridSize = 4
+            amigosSoly.all { item ->
+                item.assignedCell?.row != null && item.assignedCell!!.row < gridSize
+            }
+        }
         else -> false
     }
+
 
     fun saveRespuesta() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -145,7 +153,8 @@ fun TestScreen(
                     1 -> selectedOption ?: ""
                     2 -> userPattern
                     3 -> userAnswers.joinToString(";")
-                    4 -> userDragMatchResult
+                    4 -> FormatUtil.formatDragMatchResult(amigosSoly)
+
                     else -> ""
                 }
 
@@ -157,7 +166,7 @@ fun TestScreen(
                         fecha = current.toString()
                     )
                     resultadoDao.insertResultado(resultado)
-                    Log.d("DB", "Resultado insertado con éxito")
+                    Log.d("DB", "Resultado insertado con éxito: $answerToSave")
                 } else {
                     Log.e("DB", "Estudiante o pregunta no existe — insert cancelado")
                 }
@@ -253,7 +262,7 @@ fun TestScreen(
                                 context = context,
                                 idPregunta = idPregunta,
                                 preguntaText = preguntaText,
-                                items = items,
+                                items = amigosSoly,
                                 gridSize = 4,
                                 onPositionsSaved = { resultString ->
                                     userDragMatchResult = resultString

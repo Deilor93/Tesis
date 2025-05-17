@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.tesis.logica.Clasificacion
 import com.example.tesis.logica.DbClass
-import com.example.tesis.logica.Recomendacion
+import com.example.tesis.vista.modelo.ClasificacionConRecomendacion
 import com.example.tesis.vista.util.Mogra
 import com.example.tesis.vista.viewmodel.SharedViewModel
 
@@ -42,7 +42,7 @@ fun RecommendationsScreen(
     val clasificacionDao = db.clasificacionDao()
     val recomendacionDao = db.recomendacionDao()
 
-
+    //Mapa de etiqueta con resultado de respuestas correctas
     val intelligencias = mapOf(
         "Inteligencia Lingüística" to sharedViewModel.contLing,
         "Inteligencia Lógico-Matemática" to sharedViewModel.contMat,
@@ -54,13 +54,6 @@ fun RecommendationsScreen(
         "Inteligencia Naturalista" to sharedViewModel.contNatu
     )
 
-    data class ClasificacionConRecomendacion(
-        val nombre: String,
-        val puntuacion: Int,
-        val clasificacion: Clasificacion?,
-        val recomendacion: Recomendacion?
-    )
-
     val clasificaciones = remember {
         mutableStateOf<List<Triple<String, Int, Clasificacion?>>>(emptyList())
     }
@@ -70,14 +63,18 @@ fun RecommendationsScreen(
 
     Log.d("clasif", clasificaciones.toString())
 
+    //Calculo para asignacion de categoria dependiendo de la cantidad de respuestas correctas
     fun calcCat(puntuacion: Int): Int = when {
         puntuacion <= 2 -> 1
         puntuacion == 3 -> 2
         else -> 3
     }
 
+    /**Selecciona las recomendaciones a mostrar por cada inteligencia basado en el resultado
+     * obtenido en cada una de ellas y las guarda en un data class con la informacion que se
+     * va a mostrar en pantalla*/
     LaunchedEffect(Unit) {
-        val result = intelligencias.map { (name, puntuacion) ->
+        val result = intelligencias.map { (nombreInteligencia, puntuacion) ->
             val catId = calcCat(puntuacion)
             val clasificacion = clasificacionDao.getClasificacionById(catId)
             val recomendacion = clasificacion?.let {
@@ -86,7 +83,8 @@ fun RecommendationsScreen(
                     categoriaId = catId
                 )
             }
-            ClasificacionConRecomendacion(name, puntuacion, clasificacion, recomendacion)
+            //Data class con la informacion que se va a mostrar en pantalla
+            ClasificacionConRecomendacion(nombreInteligencia, puntuacion, clasificacion, recomendacion)
         }
         resultados.value = result
     }
@@ -101,6 +99,7 @@ fun RecommendationsScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
+            //Escribe los resultados en pantalla
             resultados.value.forEach { item ->
                 Text(
                     buildAnnotatedString {

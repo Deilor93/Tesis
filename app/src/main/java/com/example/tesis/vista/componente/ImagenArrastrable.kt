@@ -24,12 +24,13 @@ fun ImagenArrastrable(
     gridCells: List<GridCell>,
     allItems: List<DraggableItem>,
     initialOffset: Offset,
-    cellSize: Float
+    cellSize: Float,
+    visibleGridSize: Int
 ) {
-    // Offset must be persistent even if the Composable recomposes, use rememberUpdatedState pattern
+    // El offset debe ser persistente incluso si el composable se re compone
     var offset by remember { mutableStateOf(initialOffset) }
 
-    // Ensure offset updates when the item has an assignedCell during composition
+    // Asegura actualizacion del offset durante la composicion del composable
     LaunchedEffect(item.assignedCell) {
         item.assignedCell?.let { cell ->
             offset = Offset(
@@ -50,11 +51,17 @@ fun ImagenArrastrable(
                         offset += dragAmount
                     },
                     onDragEnd = {
-                        // Find nearest unoccupied cell
+                        //Limita las casillas disponibles a las casillas visibles y las casillas desocupadas
                         val availableCells = gridCells.filter { cell ->
-                            allItems.none { it.assignedCell?.index == cell.index }
+                            cell.row < visibleGridSize &&/*Previene que los items se pongan en
+                                                            la fila invisible despues de moverlos*/
+                            cell.column < visibleGridSize &&/*Previene que los items se pongan
+                                                                en lsa columnas invisibles*/
+                            allItems.none { it.assignedCell?.index == cell.index } /*Previene que los
+                                                        items se puedan sobrelapar en la misma celda*/
                         }
 
+                        // Busca la celda vacia mas cercana delimitado por las restricciones anteriores
                         val nearestCell = availableCells.minByOrNull { cell ->
                             hypot(
                                 (cell.position.x + cellSize / 2) - (offset.x + 60f),

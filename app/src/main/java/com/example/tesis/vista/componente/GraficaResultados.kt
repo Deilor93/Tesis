@@ -26,6 +26,7 @@ fun GraficaResultados(
         val radius = size.minDimension / 2 * 0.8f
         val angleStep = (2 * Math.PI / 8).toFloat()
 
+        //Etiquetas a mostrar en los vertices del grafico
         val labels = listOf(
             "Inteligencia\nLingüística",
             "Inteligencia\nLógico-Matemática",
@@ -54,7 +55,8 @@ fun GraficaResultados(
         val filledPath = Path().apply {
             for (i in 0 until 8) {
                 val rawScoreFraction = scores[i].toFloat() / maxScore
-                val scoreFraction = rawScoreFraction.coerceAtLeast(0.05f) // Radio minimo de 5% para mostrar
+                val scoreFraction = rawScoreFraction.coerceAtLeast(0.05f) /* Radio minimo de 5% para
+                                                                       mostrar para que la grafica no aparezca vacia*/
                 val scaledRadius = radius * scoreFraction
                 val angle = i * angleStep - Math.PI / 2
                 val x = center.x + scaledRadius * cos(angle).toFloat()
@@ -64,7 +66,7 @@ fun GraficaResultados(
             close()
         }
 
-
+        //Dibuja el relleno de la grafica
         drawPath(path = filledPath, color = Color(0xFF55DFBE).copy(alpha = 1f))
 
         // Dibuja las lineas desde el centro hasta el vertice dibujado
@@ -99,7 +101,7 @@ fun GraficaResultados(
                 drawContext.canvas.nativeCanvas.drawText(
                     line,
                     x,
-                    y + index * 22f, // 22f is line height spacing
+                    y + index * 22f, // 22f es el espaciado de altura de la linea
                     textPaint
                 )
             }

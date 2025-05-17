@@ -26,6 +26,7 @@ fun PreguntaArrastrarYUbicar(
     gridSize: Int,
     onPositionsSaved: (String) -> Unit
 ) {
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -37,14 +38,26 @@ fun PreguntaArrastrarYUbicar(
         Spacer(modifier = Modifier.height(16.dp))
 
         val cellSizePx = 100f
+        val visibleGridSize = gridSize
+        val totalRows = gridSize + 1 // Agrega una fila extra invisible para los items fuera del grid
+        val totalColumns = maxOf(gridSize, items.size) //Columnas extra invisibles para los items fuera del grid
+
+        //Crea el grid de celdas sobre el cual se van a poner los items
         val gridCells = remember {
             val cells = mutableListOf<GridCell>()
             var index = 0
-            for (row in 0 until gridSize) {
-                for (col in 0 until gridSize) {
+            for (row in 0 until totalRows) {
+                for (col in 0 until totalColumns) {
                     val x = col * cellSizePx
                     val y = row * cellSizePx
-                    cells.add(GridCell(index = index, row = row, column = col, position = Offset(x, y)))
+                    cells.add(
+                        GridCell(
+                            index = index,
+                            row = row,
+                            column = col,
+                            position = Offset(x, y)
+                        )
+                    )
                     index++
                 }
             }
@@ -63,14 +76,14 @@ fun PreguntaArrastrarYUbicar(
                     .padding(vertical = 16.dp)
             )
 
-            // Grid area with Canvas and items over it
             Box(
                 modifier = Modifier
                     .size((gridSize * cellSizePx).dp)
             ) {
+                //Dibuja el grid creado sobre la pantalla
                 Canvas(modifier = Modifier.fillMaxSize()) {
-                    gridCells.forEach { cell ->
-                        drawRect(
+                    gridCells.filter { it.row < visibleGridSize && it.column < gridSize }.forEach { cell ->
+                    drawRect(
                             color = Color.Black,
                             topLeft = cell.position,
                             size = Size(cellSizePx, cellSizePx),
@@ -79,40 +92,36 @@ fun PreguntaArrastrarYUbicar(
                     }
                 }
 
-                // Draggable items over the grid
+                /**Inicializa la posicion de los items dentro de la fila invisible fuera del grid para que
+                 * aparezcan alineados uno al lado del otro*/
+                LaunchedEffect(Unit) {
+                    items.forEachIndexed { index, item ->
+                        if (item.assignedCell == null) {
+                            val row = visibleGridSize
+                            val col = index // Permite que se repartan por toda la fila
+                            val cell = gridCells.firstOrNull { it.row == row && it.column == col }
+                            item.assignedCell = cell
+                        }
+                    }
+                }
+
+                // Crea los tems arrastrables sobre el grid en sus celdas asignadas
                 items.forEach { item ->
                     ImagenArrastrable(
                         item = item,
                         gridCells = gridCells,
                         allItems = items,
-                        // If not assigned, stay at the initial external position below the grid
                         initialOffset = item.assignedCell?.let {
-                            Offset(it.position.x + cellSizePx / 2 - 40f, it.position.y + cellSizePx / 2 - 40f)
-                        } ?: Offset(0f, (gridSize * cellSizePx + 100f))
-                        ,
-                        cellSize = cellSizePx
+                            Offset(
+                                it.position.x + cellSizePx / 2 - 40f,
+                                it.position.y + cellSizePx / 2 - 40f
+                            )
+                        } ?: Offset.Zero,
+                        cellSize = cellSizePx,
+                        visibleGridSize = gridSize
                     )
                 }
-            }
-        }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Row showing the draggable items at the bottom if not assigned
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            items.filter { it.assignedCell == null }.forEach { item ->
-                Column(modifier = Modifier.weight(1f)){
-                    ImagenArrastrable(
-                        item = item,
-                        gridCells = gridCells,
-                        allItems = items,
-                        initialOffset = Offset(0f, (gridSize * cellSizePx + 100f)),
-                        cellSize = cellSizePx
-                    )
-                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.tesis.vista.util
 
+//Utilidades para validacion de datos
 class ValidadorUtils {
     /**
      * Valida el patron ingresado por el usuario, tomando en cuenta que sea igual.

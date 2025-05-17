@@ -22,7 +22,7 @@ fun FlexiblePatternGrid(
     initialPattern: String,
     onPatternCompleted: (String) -> Unit,
     modifier: Modifier = Modifier,
-    dotRadius: Float = 15f
+    dotRadius: Float = 15f  //Radio para el tamaño de los puntos
 ) {
     val selectedDots = remember { mutableStateListOf<Int>() }
     val dotCenters = remember { mutableStateListOf<Offset>() }
@@ -33,7 +33,8 @@ fun FlexiblePatternGrid(
             selectedDots.addAll(initialPattern.split("-").mapNotNull { it.toIntOrNull() })
         }
     }
-
+    /**pointerInput detecta si se han seleccionado puntos, cuales son y en que orden,
+    y lo asigna a la variable a guardar en la db*/
     Box(
         modifier = modifier
             .pointerInput(Unit) {
@@ -56,21 +57,24 @@ fun FlexiblePatternGrid(
     ) {
         Canvas(modifier = Modifier.fillMaxHeight().fillMaxWidth(0.5f)) {
             dotCenters.clear()
-            /**rows es 7 columnas es 6, se fijo el valor por el requerimiento de la pregunta pero el
+            /**rows es 7 columnas es 6, se fijó el valor por el requerimiento de la pregunta pero el
              *  codigo sigue siendo dinamico
             */
             val marginXFactor = 0.05f
             val marginYFactor = 0.15f
+            //Calculo de distancia entre puntos en el eje horizontal
             val spacingX = size.width * (1 - marginXFactor * 2) / (6 - 1)
+            //Calculo de distancia entre puntos en el eje vertical
             val spacingY = size.height * (1 - marginYFactor * 2) / (7 - 1)
 
             for (i in 0 until 7) {
                 for (j in 0 until 6) {
                     val x = size.width * marginXFactor + j * spacingX
                     val y = size.height * marginYFactor + i * spacingY
+                    //Asicnacion de centro del punto
                     val center = Offset(x, y)
                     dotCenters.add(center)
-
+                    //Dibuja los "puntos" seleccionables para el patron y pinta los puntos seleccionados
                     drawCircle(
                         color = if (selectedDots.contains(i * 6 + j)) Color(0xFF55DFBE) else Color.LightGray,
                         radius = dotRadius,
@@ -79,7 +83,7 @@ fun FlexiblePatternGrid(
                     )
                 }
             }
-
+            //dibuja el "camino" entre los puntos seleccionados
             if (selectedDots.size >= 2) {
                 val path = Path().apply {
                     selectedDots.map { dotCenters[it] }.forEachIndexed { index, offset ->
@@ -93,7 +97,7 @@ fun FlexiblePatternGrid(
     }
 }
 
-
+//Revisa los puntos que han sido seleccionados para agregarlos al string a guardar
 private fun checkDotSelection(
     position: Offset,
     dotCenters: List<Offset>,

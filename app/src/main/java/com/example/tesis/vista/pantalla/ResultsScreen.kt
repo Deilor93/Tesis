@@ -63,6 +63,8 @@ fun ResultsScreen(
     var contIntra by remember { mutableStateOf(0) }
     var contNatu by remember { mutableStateOf(0) }
 
+    /**Revisa las respuestas obtenidos y cuenta las respuestas correctas de cada categoria para
+     * calcular los resultados del usuario*/
     LaunchedEffect(Unit) {
         for (i in 1..8) {
 
@@ -109,6 +111,7 @@ fun ResultsScreen(
 
                 )
                 Box(modifier = Modifier.align(Alignment.CenterHorizontally)){
+                    //Pinta la grafica de resultados en pantalla
                     GraficaResultados(
                         scores = listOf(
                             contLing, contMat, contEsp, contMus,

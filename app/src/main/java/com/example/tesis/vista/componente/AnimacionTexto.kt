@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tesis.vista.util.Mogra
 
-//Animar texto pregunta
+//Animar texto pregunta utilizando la api experimental de animacion
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AnimacionTexto(
@@ -27,10 +27,12 @@ fun AnimacionTexto(
     AnimatedContent(
         targetState = questionText,
         transitionSpec = {
+            //Desliza el texto dentro de la pantalla desde la derecha
             slideInHorizontally(
                 animationSpec = tween(500),
                 initialOffsetX = { fullWidth -> fullWidth }
             ).togetherWith(
+                //Desliza el texto fuera de la pantalla hacia la izquierda
                 slideOutHorizontally(
                     animationSpec = tween(500),
                     targetOffsetX = { fullWidth -> -fullWidth }

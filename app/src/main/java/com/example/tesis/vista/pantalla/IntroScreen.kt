@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.sp
 import com.example.tesis.R
 import com.example.tesis.logica.DbClass
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager

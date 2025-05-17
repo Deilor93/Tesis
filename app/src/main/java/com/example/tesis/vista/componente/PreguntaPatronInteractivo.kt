@@ -37,12 +37,11 @@ fun PreguntaPatronInteractivo(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Question Text
+
         AnimacionTexto(preguntaText)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Row with image and pattern grid side by side
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -56,7 +55,7 @@ fun PreguntaPatronInteractivo(
                     .padding(vertical = 16.dp)
             )
 
-            // Pattern grid
+            // Grid del patron para seleccionar
             Box(
                 modifier = Modifier
                     .weight(1f)

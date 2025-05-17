@@ -54,6 +54,7 @@ fun SeleccionMultiple(
         Row(
             modifier = Modifier.selectableGroup()
         ) {
+            /**Asignacion de los botones para respuesta de preguntas de seleccion multiple*/
             radioOptions.forEach { text ->
                 Column(
                     modifier = Modifier

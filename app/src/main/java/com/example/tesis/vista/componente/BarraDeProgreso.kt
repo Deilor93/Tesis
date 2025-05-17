@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.cos
 import kotlin.math.sin
 
+//Crea la barra de progreso en pantalla
 @Composable
 fun StepsProgressBar(modifier: Modifier = Modifier, numberOfSteps: Int, currentStep: Int) {
     Row(
@@ -29,6 +30,7 @@ fun StepsProgressBar(modifier: Modifier = Modifier, numberOfSteps: Int, currentS
     }
 }
 
+//Crea los pasos de la barra de progreso para poder mostrar en pantalla
 @Composable
 fun Step(modifier: Modifier = Modifier, isComplete: Boolean, isCurrent: Boolean) {
     val color = if (isComplete || isCurrent) Color(0xFF55DFBE) else Color.LightGray
@@ -47,6 +49,7 @@ fun Step(modifier: Modifier = Modifier, isComplete: Boolean, isCurrent: Boolean)
     }
 }
 
+//Dibuja la forma de estrella creada
 @Composable
 fun StarCanvasSmooth(
     modifier: Modifier = Modifier,
@@ -79,7 +82,7 @@ fun StarCanvasSmooth(
     }
 }
 
-// Private star path generator
+// Crea el patron de estrella a dibujar
 private fun createStarPath(
     center: Offset,
     outerRadius: Float,

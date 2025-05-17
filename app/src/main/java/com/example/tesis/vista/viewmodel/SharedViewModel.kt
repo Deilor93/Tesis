@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.example.tesis.logica.Estudiante
 import com.example.tesis.logica.Resultado
 
+//ViewModel compartido para almacenar variables utilizadas en mas de una pantalla
 class SharedViewModel : ViewModel() {
     var estudiante: Estudiante? by mutableStateOf(null)
 

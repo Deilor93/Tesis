@@ -46,6 +46,9 @@ fun PreguntaRespuestaAbierta(
 
 
         Row {
+            /**Utiliza la variable radioOptions ya que es el mismo modelo de asignacion utilizado
+             * en SeleccionMultiple para poner en pantalla la cantidad de casillas de respuesta
+             * que el usuario puede utilizar*/
             radioOptions.forEachIndexed { index, label ->
                 Column(modifier = Modifier
                     .fillMaxWidth()
@@ -63,7 +66,6 @@ fun PreguntaRespuestaAbierta(
                             nuevaRespuesta[index] = newText
                             onAnswersChanged(nuevaRespuesta)
                         },
-                        //label = { Text(label.ifBlank { "Respuesta ${index + 1}" }) },
                         singleLine = true,
                         modifier = Modifier
                             .padding(vertical = 8.dp)
