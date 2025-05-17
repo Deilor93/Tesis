@@ -75,9 +75,9 @@ fun GraficaResultados(
 
             val scaledRadius = radius * scoreFraction
             val angle = i * angleStep - Math.PI / 2
-            val x = center.x + scaledRadius * cos(angle).toFloat()
-            val y = center.y + scaledRadius * sin(angle).toFloat()
             //Agrega un punto en los vertices de cada puntuacion
+            //val x = center.x + scaledRadius * cos(angle).toFloat()
+            //val y = center.y + scaledRadius * sin(angle).toFloat()
             //drawCircle(Color.Red, radius = 6f, center = Offset(x, y))
         }
 

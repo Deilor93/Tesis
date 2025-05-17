@@ -23,8 +23,7 @@ fun PreguntaArrastrarYUbicar(
     idPregunta: Int,
     preguntaText: String,
     items: List<DraggableItem>,
-    gridSize: Int,
-    onPositionsSaved: (String) -> Unit
+    gridSize: Int
 ) {
 
     Column(
