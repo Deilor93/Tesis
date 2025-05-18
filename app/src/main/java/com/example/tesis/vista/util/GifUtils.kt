@@ -1,11 +1,9 @@
 package com.example.tesis.vista.util
 
 import android.os.Build
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.GifDecoder
@@ -34,9 +32,9 @@ fun GifLoader(resourceId: Int, modifier: Modifier = Modifier) {
 }
 //Carga el gif utilizando el loader creado
 @Composable
-fun MostrarGif() {
+fun MostrarGif(modifier: Modifier) {
     GifLoader(
         resourceId = R.drawable.smoke_gif,
-        modifier = Modifier.size(200.dp)
+        modifier = modifier
     )
 }

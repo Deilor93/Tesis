@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.example.tesis.R
 import com.example.tesis.logica.DbClass
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
@@ -144,16 +145,24 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
                     Button(
                         onClick = {
                             CoroutineScope(Dispatchers.IO).launch {
-                                if(nombreEstudiante != "" && codigoEstudiante != ""){
-                                    val est = Estudiante(nombre = nombreEstudiante, codigo = codigoEstudiante)
-                                    val id = db.estudianteDao().insertEstudiante(est).toInt()
-                                    val estWithId = est.copy(id = id)
-                                    withContext(Dispatchers.Main) {
-                                        sharedViewModel.estudiante = estWithId
-                                        navController.navigate("welcome")
+                                try {
+                                    if(nombreEstudiante != "" && codigoEstudiante != ""){
+                                        val est = Estudiante(
+                                            nombre = nombreEstudiante,
+                                            codigo = codigoEstudiante
+                                        )
+                                        val id = db.estudianteDao().insertEstudiante(est).toInt()
+                                        val estWithId = est.copy(id = id)
+                                        withContext(Dispatchers.Main) {
+                                            sharedViewModel.estudiante = estWithId
+                                            navController.navigate("welcome")
+                                        }
+                                    }else{
+                                        mostrarAlerta = true
+                                        Log.e("DB", "Estudiante o codigo en blanco — insert cancelado")
                                     }
-                                }else{
-                                    mostrarAlerta = true
+                                }catch (e: Exception){
+                                    Log.e("DB_ERROR", "Error guardando resultado: ${e.message}", e)
                                 }
                             }
                         },

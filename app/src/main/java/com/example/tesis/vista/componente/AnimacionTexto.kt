@@ -43,7 +43,7 @@ fun AnimacionTexto(
     ) { pregunta ->
         Text(
             text = pregunta,
-            fontSize = 50.sp,
+            fontSize = 40.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF34D9A2),
             fontFamily = Mogra,

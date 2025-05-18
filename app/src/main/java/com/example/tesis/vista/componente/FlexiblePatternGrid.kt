@@ -60,8 +60,8 @@ fun FlexiblePatternGrid(
             /**rows es 7 columnas es 6, se fijó el valor por el requerimiento de la pregunta pero el
              *  codigo sigue siendo dinamico
             */
-            val marginXFactor = 0.05f
-            val marginYFactor = 0.15f
+            val marginXFactor = 0.25f
+            val marginYFactor = 0.05f
             //Calculo de distancia entre puntos en el eje horizontal
             val spacingX = size.width * (1 - marginXFactor * 2) / (6 - 1)
             //Calculo de distancia entre puntos en el eje vertical

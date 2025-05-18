@@ -3,16 +3,20 @@ package com.example.tesis.vista.componente
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.tesis.vista.util.ImagenPregunta
 
@@ -29,27 +33,29 @@ fun PreguntaRespuestaAbierta(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(5.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AnimacionTexto(preguntaText)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        //Spacer(modifier = Modifier.height(16.dp))
 
         ImagenPregunta(
             context = context,
             idPregunta = idPregunta,
             modifier = Modifier
-                .size(300.dp)
-                .padding(vertical = 16.dp)
+                .size(350.dp)
         )
-
 
         Row {
             /**Utiliza la variable radioOptions ya que es el mismo modelo de asignacion utilizado
              * en SeleccionMultiple para poner en pantalla la cantidad de casillas de respuesta
              * que el usuario puede utilizar*/
             radioOptions.forEachIndexed { index, label ->
+                val isNumeric = preguntaText.lowercase().contains("cuánt") ||
+                        preguntaText.lowercase().contains("núm")
+
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -66,10 +72,13 @@ fun PreguntaRespuestaAbierta(
                             nuevaRespuesta[index] = newText
                             onAnswersChanged(nuevaRespuesta)
                         },
+                        label = { Text(text = label) },
                         singleLine = true,
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .height(100.dp)
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = if (isNumeric) KeyboardType.Number else KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        //modifier = Modifier.height(60.dp)
                     )
                 }
             }

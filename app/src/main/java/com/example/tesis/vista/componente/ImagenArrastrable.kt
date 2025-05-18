@@ -25,7 +25,8 @@ fun ImagenArrastrable(
     allItems: List<DraggableItem>,
     initialOffset: Offset,
     cellSize: Float,
-    visibleGridSize: Int
+    visibleGridSize: Int,
+    onAssignmentChanged: (List<Boolean>) -> Unit
 ) {
     // El offset debe ser persistente incluso si el composable se re compone
     var offset by remember { mutableStateOf(initialOffset) }
@@ -76,6 +77,14 @@ fun ImagenArrastrable(
                                 cell.position.y + (cellSize / 2) - 60f
                             )
                         }
+
+                        onAssignmentChanged(
+                            allItems.map {
+                                it.assignedCell?.let { cell ->
+                                    cell.row in 0 until visibleGridSize && cell.column in 0 until visibleGridSize
+                                } == true
+                            }
+                        )
                     }
                 )
             },

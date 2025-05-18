@@ -23,7 +23,9 @@ fun PreguntaArrastrarYUbicar(
     idPregunta: Int,
     preguntaText: String,
     items: List<DraggableItem>,
-    gridSize: Int
+    gridSize: Int,
+    onAssignmentChanged: (List<Boolean>) -> Unit
+
 ) {
 
     Column(
@@ -100,6 +102,13 @@ fun PreguntaArrastrarYUbicar(
                             val col = index // Permite que se repartan por toda la fila
                             val cell = gridCells.firstOrNull { it.row == row && it.column == col }
                             item.assignedCell = cell
+                            onAssignmentChanged(
+                                items.map { item ->
+                                    item.assignedCell?.let { it.row in 0 until gridSize &&
+                                            it.column in 0 until gridSize } == true
+                                }
+                            )
+
                         }
                     }
                 }
@@ -117,7 +126,8 @@ fun PreguntaArrastrarYUbicar(
                             )
                         } ?: Offset.Zero,
                         cellSize = cellSizePx,
-                        visibleGridSize = gridSize
+                        visibleGridSize = gridSize,
+                        onAssignmentChanged = onAssignmentChanged
                     )
                 }
 

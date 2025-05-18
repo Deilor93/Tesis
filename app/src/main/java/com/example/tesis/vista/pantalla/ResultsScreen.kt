@@ -1,6 +1,7 @@
 package com.example.tesis.vista.pantalla
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,6 +32,7 @@ import androidx.navigation.NavHostController
 import com.example.tesis.logica.DbClass
 import com.example.tesis.vista.componente.GraficaResultados
 import com.example.tesis.vista.util.Mogra
+import com.example.tesis.vista.util.ValidadorUtils
 import com.example.tesis.vista.viewmodel.SharedViewModel
 
 @Composable
@@ -65,30 +67,46 @@ fun ResultsScreen(
 
     /**Revisa las respuestas obtenidos y cuenta las respuestas correctas de cada categoria para
      * calcular los resultados del usuario*/
-    LaunchedEffect(Unit) {
-        for (i in 1..8) {
+    val validador = ValidadorUtils()
 
+    LaunchedEffect(Unit) {
+        for (i in 1..15) {
             pregunta = preguntaDao.getPreguntaById(idPregunta ?: 0)
             resultado = resultadoDao.getResultadoById(idResultado)
-            if(pregunta?.respuestaCorrecta == resultado?.respuesta){
-                when (pregunta?.categoriaId) {
-                    1 -> contLing = contLing + 1
-                    2 -> contMat = contMat + 1
-                    3 -> contEsp = contEsp + 1
-                    4 -> contMus = contMus + 1
-                    5 -> contCor = contCor + 1
-                    6 -> contInter = contInter + 1
-                    7 -> contIntra = contIntra + 1
-                    8 -> contNatu = contNatu + 1
-                }
-                idPregunta = idPregunta?.plus(1)
-                idResultado = idResultado + 1
-            }else{
-                idPregunta = idPregunta?.plus(1)
-                idResultado = idResultado + 1
+
+            val isCorrect = when (pregunta?.tipoPregunta) {
+                2 -> validador.isPatronCorrecto(
+                    resultado?.respuesta ?: "",
+                    pregunta?.respuestaCorrecta ?: ""
+                )
+                4 -> validador.isArrastrarYUbicarCorrecto(
+                    resultado?.respuesta ?: "",
+                    pregunta?.respuestaCorrecta ?: ""
+                )
+                else -> resultado?.respuesta == pregunta?.respuestaCorrecta
             }
+
+            if (isCorrect) {
+                when (pregunta?.categoriaId) {
+                    1 -> contLing += 1
+                    2 -> contMat += 1
+                    3 -> contEsp += 1
+                    4 -> contMus += 1
+                    5 -> contCor += 1
+                    6 -> contInter += 1
+                    7 -> contIntra += 1
+                    8 -> contNatu += 1
+                }
+            }
+            Log.d("Validation", "Expected: ${pregunta?.respuestaCorrecta}")
+            Log.d("Validation", "Given: ${resultado?.respuesta}")
+
+            idPregunta = idPregunta?.plus(1)
+            idResultado += 1
         }
     }
+
+
 
     Surface(
         modifier = Modifier

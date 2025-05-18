@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,15 +24,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -51,6 +57,7 @@ import java.time.format.DateTimeFormatter
 import com.example.tesis.vista.componente.StepsProgressBar
 import com.example.tesis.vista.modelo.DraggableItem
 import com.example.tesis.vista.util.FormatUtil
+import com.example.tesis.vista.util.MostrarGif
 import com.example.tesis.vista.viewmodel.SharedViewModel
 
 
@@ -69,25 +76,31 @@ fun TestScreen(
 
     val estudiante = sharedViewModel.estudiante
 
-    var idPregunta by remember{mutableStateOf(1)}
-    var idRespuesta by remember{mutableStateOf(1)}
+    var idPregunta by remember{ mutableIntStateOf(1) }
+    var idRespuesta by remember{ mutableIntStateOf(1) }
 
     var preguntaText by remember { mutableStateOf("")}
-    var tipoPregunta by remember {mutableStateOf(0)}
+    var tipoPregunta by remember { mutableIntStateOf(0) }
     val cantidadPreguntas = preguntaDao.getCantidadPreguntas()
 
     var respuesta by remember {mutableStateOf("")}
 
     val coroutineScope = rememberCoroutineScope()
 
+    var localFocusManager = LocalFocusManager.current
 
     //Contador de pregunta actual para rastrear progreso
-    var currentStep by remember { mutableStateOf(0) }
+    var currentStep by remember { mutableIntStateOf(0) }
 
     val radioOptions by remember(respuesta) { mutableStateOf(respuesta.split(",")) }
     val (selectedOption, onOptionSelected) = remember(idPregunta) { mutableStateOf<String?>(null) }
-    var userAnswers by remember { mutableStateOf(List(radioOptions.size) { "" }) }
+    var userAnswers by remember(idPregunta, radioOptions) {
+        mutableStateOf(List(radioOptions.size) { "" })
+    }
+
     var userPattern by remember { mutableStateOf("") }
+
+    var userDragMatchResult by remember { mutableStateOf("") }
 
     val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
     val current = LocalDateTime.now().format(formatter)
@@ -105,13 +118,25 @@ fun TestScreen(
         )
     }
 
-    //Actualizar pregunta, respuesta y seleccion dinamicamente
+    val assignedStatus = remember { mutableStateListOf<Boolean>().apply { repeat(6) { add(false) } } }
+
+
+
+    //Actualizar dinamicamente variables cambiantes
     LaunchedEffect(idPregunta, idRespuesta) {
         val pregunta = preguntaDao.getPreguntaById(idPregunta)
         preguntaText = pregunta?.pregunta ?: ""
         tipoPregunta = pregunta?.tipoPregunta ?: 0
         respuesta = respuestaDao.getRespuestaById(idRespuesta)
     }
+    LaunchedEffect(amigosSoly) {
+        snapshotFlow {
+            amigosSoly.map { it.assignedCell }
+        }.collect {
+            userDragMatchResult = FormatUtil.formatDragMatchResult(amigosSoly)
+        }
+    }
+
 
     if (mostrarAlerta) {
         AlertDialog(
@@ -129,56 +154,74 @@ fun TestScreen(
         )
     }
 
-    val isAnswerGiven = when (tipoPregunta) {
-        1 -> selectedOption != null
-        2 -> userPattern.isNotBlank()
-        3 -> userAnswers.any { it.isNotBlank() }
-        4 -> {
-            // Verifica que todos los arrqastrables estan dentro del grid de casillas visibles
-            val gridSize = 4
-            amigosSoly.all { item ->
-                item.assignedCell?.row != null && item.assignedCell!!.row < gridSize
+    val isAnswerGiven by remember(
+        tipoPregunta,
+        selectedOption,
+        userPattern,
+        userAnswers,
+        assignedStatus
+    ){
+        derivedStateOf {
+            when (tipoPregunta) {
+                1 -> selectedOption != null
+                2 -> userPattern.isNotBlank()
+                3 -> userAnswers.all { it.isNotBlank() }
+                4 -> assignedStatus.all { it }
+                else -> false
             }
         }
-        else -> false
+    }
+    LaunchedEffect(isAnswerGiven) {
+        Log.d("Validation", "isAnswerGiven = $isAnswerGiven")
     }
 
-
-    fun saveRespuesta() {
+    fun saveRespuesta(preguntaIdSnapshot: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val pregunta = db.preguntaDao().getPreguntaById(idPregunta)
+                val pregunta = db.preguntaDao().getPreguntaById(preguntaIdSnapshot)
                 val answerToSave = when (tipoPregunta) {
                     1 -> selectedOption ?: ""
                     2 -> userPattern
-                    3 -> userAnswers.joinToString(";")
+                    3 -> userAnswers.joinToString(",")
                     4 -> FormatUtil.formatDragMatchResult(amigosSoly)
-
                     else -> ""
                 }
-
                 if (estudiante != null && pregunta != null) {
                     val resultado = Resultado(
                         estudianteId = estudiante.id,
-                        preguntaId = idPregunta,
+                        preguntaId = preguntaIdSnapshot,
                         respuesta = answerToSave,
-                        fecha = current.toString()
+                        fecha = current
                     )
-                    resultadoDao.insertResultado(resultado)
-                    Log.d("DB", "Resultado insertado con éxito: $answerToSave")
-                } else {
+                    val idInsertado = resultadoDao.insertResultado(resultado).toInt()
+                    val resultadoConId = resultado.copy(id = idInsertado)
+                    Log.d("DB", "Resultado insertado con éxito: $resultadoConId")
+
+                    /**Guarda el id de la primera pregunta que el usuario responde para
+                     * poder validar las respuestas desde la primera respuesta dada en la
+                     * prueba actual*/
+                    if (preguntaIdSnapshot == 1) {
+                        withContext(Dispatchers.Main) {
+                            sharedViewModel.resultado = resultadoConId
+                            Log.d("DB", "Guardado en ViewModel con ID: ${resultadoConId.id}")
+                        }
+                    }
+                }else {
                     Log.e("DB", "Estudiante o pregunta no existe — insert cancelado")
                 }
-
             } catch (e: Exception) {
                 Log.e("DB_ERROR", "Error guardando resultado: ${e.message}", e)
             }
         }
     }
 
-
     Surface (modifier = Modifier
-        .fillMaxSize(),
+        .fillMaxSize()
+        .pointerInput(Unit) {
+            detectTapGestures(onTap = {
+                localFocusManager.clearFocus()
+            })
+        },
         color = Color(0xFFFFFF99)
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
@@ -203,19 +246,21 @@ fun TestScreen(
                         )
                     }
                     //Columna Soly
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                    Box(
                         modifier = Modifier.weight(1f)
                     ) {
-                        //MostrarGif()
-
                         Image(
                             painter = painterResource(id = R.drawable.monstruo_2),
                             contentDescription = "Soly",
                             modifier = Modifier
                                 .size(300.dp)
+                                .align(Alignment.Center)
                         )
+                        /*MostrarGif(
+                            modifier = Modifier
+                                .size(300.dp)
+                                .align(Alignment.Center)
+                        )*/
                     }
                 }
                 //Fila pregunta
@@ -248,7 +293,7 @@ fun TestScreen(
                         3 -> {
                             // Pregunta de respuesta abierta
                             PreguntaRespuestaAbierta(context = context,
-                                idPregunta = 4,
+                                idPregunta = idPregunta,
                                 preguntaText = preguntaText,
                                 radioOptions = radioOptions,
                                 respuestas = userAnswers,
@@ -262,46 +307,50 @@ fun TestScreen(
                                 idPregunta = idPregunta,
                                 preguntaText = preguntaText,
                                 items = amigosSoly,
-                                gridSize = 4
+                                gridSize = 4,
+                                onAssignmentChanged = { statusList ->
+                                    assignedStatus.clear()
+                                    assignedStatus.addAll(statusList)
+                                    }
                             )
                         }
-
                     }
                 }
-
             }
             Box(modifier = Modifier.weight(0.1f).fillMaxHeight()) {
 
                 IconButton(
-                    modifier = Modifier.align(Alignment.CenterEnd),
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                        .pointerInput(Unit) {
+                        detectTapGestures(onTap = {
+                            localFocusManager.clearFocus()
+                        })
+                    },
                     onClick = {
                         coroutineScope.launch {
-                            Log.d("estuId", estudiante?.id.toString())
                             withContext(Dispatchers.IO) {
-                                if (idPregunta == 1) {
-                                    val res = Resultado(
-                                        estudianteId = estudiante?.id ?: 0,
-                                        preguntaId = idPregunta,
-                                        respuesta = selectedOption.toString(),
-                                        fecha = current.toString()
-                                    )
-                                    val id = db.resultadoDao().insertResultado(res).toInt()
-                                    val resWithId = res.copy(id = id)
-                                    sharedViewModel.resultado = resWithId
-                                }
+                                /**Valida el avance de las preguntas para mostrar el paso actual del
+                                 * usuario, y valida que la pregunta haya sido respondida antes de
+                                 * avanzar*/
                                 if (currentStep < cantidadPreguntas - 1) {
                                     if (isAnswerGiven) {
-                                        currentStep = currentStep + 1
-                                        idPregunta = idPregunta + 1
-                                        idRespuesta = idRespuesta + 1
-                                        saveRespuesta()
+                                        val currentId = idPregunta
+                                        saveRespuesta(currentId)
+                                        currentStep++
+                                        idPregunta++
+                                        idRespuesta++
                                     } else {
                                         mostrarAlerta = true
                                     }
                                 }
+
                                 else if (currentStep < cantidadPreguntas) {
-                                    currentStep = currentStep + 1
-                                    Log.d("patron", userPattern)
+                                    if (isAnswerGiven) {
+                                        currentStep = currentStep + 1
+                                        saveRespuesta(idPregunta)
+                                    } else {
+                                        mostrarAlerta = true
+                                    }
                                 } else if (currentStep == cantidadPreguntas) {
                                     withContext(Dispatchers.Main) {
                                         Log.d("res", sharedViewModel.resultado.toString())
