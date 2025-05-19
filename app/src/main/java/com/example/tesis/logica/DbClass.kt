@@ -73,7 +73,7 @@ abstract class DbClass : RoomDatabase() {
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (8, 8, 'Fácil,Difícil');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (9, 9, 'Botones');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (10, 10, 'Abiertas,Cerradas');")
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (11, 11, '1-2-?, 6-7-?,8-9-?,0-1-?,5-?-7,?-3-4');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (11, 11, '1-2-?, 8-9-?, 5-?-7, 6-7-?, 0-1-?, ?-3-4');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (12, 12, 'Manzanas,Uvas,Piñas,Naranjas,Peras');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (13, 13, 'Cuantas peras hay?');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (14, 14, 'Camino');")

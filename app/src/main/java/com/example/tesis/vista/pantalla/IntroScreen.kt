@@ -115,7 +115,9 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
 
                     OutlinedTextField(
                         value = codigoEstudiante,
-                        onValueChange = { codigoEstudiante = it },
+                        onValueChange = {
+                            codigoEstudiante = it.filter { char -> char.isDigit() }
+                        },
                         label = { Text("Código estudiantil") },
                         colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White),
                         maxLines = 1,
