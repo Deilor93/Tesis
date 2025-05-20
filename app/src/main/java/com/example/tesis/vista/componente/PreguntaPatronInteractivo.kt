@@ -20,14 +20,14 @@ import com.example.tesis.vista.util.ImagenPregunta
 //Pregunta patron
 @Composable
 fun PreguntaPatronInteractivo(
+    modifier: Modifier = Modifier,
     context: Context,
     idPregunta: Int,
     preguntaText: String,
     currentPattern: String,
     onPatternChanged: (String) -> Unit,
     rows: Int = 4,
-    columns: Int = 4,
-    modifier: Modifier = Modifier
+    columns: Int = 4
 ) {
     Column(
         modifier = modifier

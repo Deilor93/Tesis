@@ -180,7 +180,7 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
 
                 Column {
                     Image(
-                        painter = painterResource(id = R.drawable.monstruo_2),
+                        painter = painterResource(id = R.drawable.monstruo),
                         contentDescription = "Soly",
                         modifier = Modifier
                             .size(1000.dp)

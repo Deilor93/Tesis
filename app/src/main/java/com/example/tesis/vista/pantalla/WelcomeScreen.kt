@@ -38,7 +38,7 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
         Column(verticalArrangement = Arrangement.Center,
             modifier = Modifier.weight(0.45f)){
             Image(
-                painter = painterResource(id = R.drawable.monstruo_2),
+                painter = painterResource(id = R.drawable.monstruo),
                 contentDescription = "Soly",
                 modifier = Modifier
                     .size(900.dp)

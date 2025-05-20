@@ -58,7 +58,7 @@ abstract class DbClass : RoomDatabase() {
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (10, 'Ayuda a Soly a contar las latas, cuántas latas abiertas y cuántas latas cerradas hay?', '1,3', 2, 3);")
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (11, 'Soly quiere contar, dile a Soly cuál es el siguiente número en la secuencia', '3,8,10,2,6,2', 2, 3);")
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (12, 'Soly quiere tu ayuda para contar las frutas, cuántas puedes ver de cada una?', '6,2,4,5,4', 2, 3);")
-                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (13, 'Soly llevó 5 peras para compartir con su amigo, si se comieron 2, cuántas quedaron?', '2', 2, 3);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (13, 'Soly llevó 5 peras para compartir con su amigo, si se comieron 3, cuántas quedaron?', '2', 2, 3);")
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (14, 'Soly necesita tu ayuda para volver a casa, dibuja el camino que debe seguir para llegar', '32-33-34-35-28-21-14-7-12-6-0-1-2-3', 3, 2);")
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (15, 'Ayuda a los amigos de Soly a llegar a su casilla correspondiente siguiendo el ejemplo en la imagen', 'A:1-2,B:1-1,C:0-3,D:3-0,E:3-2,F:2-3', 3, 4);")
 
@@ -75,7 +75,7 @@ abstract class DbClass : RoomDatabase() {
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (10, 10, 'Abiertas,Cerradas');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (11, 11, '1-2-?, 8-9-?, 5-?-7, 6-7-?, 0-1-?, ?-3-4');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (12, 12, 'Manzanas,Uvas,Piñas,Naranjas,Peras');")
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (13, 13, 'Cuantas peras hay?');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (13, 13, 'Cuantas peras quedan?');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (14, 14, 'Camino');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (15, 15, 'Amigos');")
 

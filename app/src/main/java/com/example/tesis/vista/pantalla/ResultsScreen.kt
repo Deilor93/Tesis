@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,21 +50,21 @@ fun ResultsScreen(
     val resultadoPrueba = sharedViewModel.resultado
 
 
-    var idResultado by remember{mutableStateOf(resultadoPrueba?.id ?: 0)}
+    var idResultado by remember{ mutableIntStateOf(resultadoPrueba?.id ?: 0) }
     var idPregunta by remember{mutableStateOf(resultadoDao.getResultadoById(idResultado)?.preguntaId)}
 
     var pregunta by remember {mutableStateOf(preguntaDao.getPreguntaById(idPregunta?.toInt() ?: 0))}
 
     var resultado by remember { mutableStateOf(resultadoDao.getResultadoById(idResultado)) }
 
-    var contLing by remember { mutableStateOf(0) }
-    var contMat by remember { mutableStateOf(0) }
-    var contEsp by remember { mutableStateOf(0) }
-    var contMus by remember { mutableStateOf(0) }
-    var contCor by remember { mutableStateOf(0) }
-    var contInter by remember { mutableStateOf(0) }
-    var contIntra by remember { mutableStateOf(0) }
-    var contNatu by remember { mutableStateOf(0) }
+    var contLing by remember { mutableIntStateOf(0) }
+    var contMat by remember { mutableIntStateOf(0) }
+    var contEsp by remember { mutableIntStateOf(0) }
+    var contMus by remember { mutableIntStateOf(0) }
+    var contCor by remember { mutableIntStateOf(0) }
+    var contInter by remember { mutableIntStateOf(0) }
+    var contIntra by remember { mutableIntStateOf(0) }
+    var contNatu by remember { mutableIntStateOf(0) }
 
     /**Revisa las respuestas obtenidos y cuenta las respuestas correctas de cada categoria para
      * calcular los resultados del usuario*/

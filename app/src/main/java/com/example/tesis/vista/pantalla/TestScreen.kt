@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,13 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.tesis.R
 import com.example.tesis.logica.DbClass
 import com.example.tesis.logica.Resultado
 import com.example.tesis.vista.component.PreguntaArrastrarYUbicar
+import com.example.tesis.vista.componente.AnimacionImagenPorNivel
 import com.example.tesis.vista.componente.PreguntaPatronInteractivo
 import com.example.tesis.vista.componente.PreguntaRespuestaAbierta
 import com.example.tesis.vista.componente.SeleccionMultiple
@@ -55,9 +52,7 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import com.example.tesis.vista.componente.StepsProgressBar
-import com.example.tesis.vista.modelo.DraggableItem
 import com.example.tesis.vista.util.FormatUtil
-import com.example.tesis.vista.util.MostrarGif
 import com.example.tesis.vista.viewmodel.SharedViewModel
 
 
@@ -107,19 +102,9 @@ fun TestScreen(
 
     var mostrarAlerta by remember { mutableStateOf(false) }
 
-    val amigosSoly = remember {
-        mutableStateListOf(
-            DraggableItem("A", R.drawable.amigo_1),
-            DraggableItem("B", R.drawable.amigo_2),
-            DraggableItem("C", R.drawable.amigo_3),
-            DraggableItem("D", R.drawable.amigo_4),
-            DraggableItem("E", R.drawable.amigo_5),
-            DraggableItem("F", R.drawable.amigo_6),
-        )
-    }
 
-    val assignedStatus = remember { mutableStateListOf<Boolean>().apply { repeat(6) { add(false) } } }
-
+    val amigosSoly = sharedViewModel.amigosSoly
+    val assignedStatus = sharedViewModel.assignedStatus
 
 
     //Actualizar dinamicamente variables cambiantes
@@ -136,7 +121,6 @@ fun TestScreen(
             userDragMatchResult = FormatUtil.formatDragMatchResult(amigosSoly)
         }
     }
-
 
     if (mostrarAlerta) {
         AlertDialog(
@@ -238,7 +222,7 @@ fun TestScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.weight(1f)
-                    ) {
+                    ){
                         StepsProgressBar(
                             modifier = Modifier.fillMaxWidth(),
                             numberOfSteps = cantidadPreguntas,
@@ -249,18 +233,12 @@ fun TestScreen(
                     Box(
                         modifier = Modifier.weight(1f)
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.monstruo_2),
-                            contentDescription = "Soly",
+                        AnimacionImagenPorNivel(
+                            currentStep = currentStep,
                             modifier = Modifier
                                 .size(300.dp)
                                 .align(Alignment.Center)
                         )
-                        /*MostrarGif(
-                            modifier = Modifier
-                                .size(300.dp)
-                                .align(Alignment.Center)
-                        )*/
                     }
                 }
                 //Fila pregunta
@@ -311,7 +289,7 @@ fun TestScreen(
                                 onAssignmentChanged = { statusList ->
                                     assignedStatus.clear()
                                     assignedStatus.addAll(statusList)
-                                    }
+                                }
                             )
                         }
                     }
@@ -320,13 +298,9 @@ fun TestScreen(
             Box(modifier = Modifier.weight(0.1f).fillMaxHeight()) {
 
                 IconButton(
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                        .pointerInput(Unit) {
-                        detectTapGestures(onTap = {
-                            localFocusManager.clearFocus()
-                        })
-                    },
+                    modifier = Modifier.align(Alignment.CenterEnd),
                     onClick = {
+                        localFocusManager.clearFocus()
                         coroutineScope.launch {
                             withContext(Dispatchers.IO) {
                                 /**Valida el avance de las preguntas para mostrar el paso actual del

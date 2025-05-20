@@ -21,7 +21,7 @@ fun ImagenPregunta(
         "drawable",
         context.packageName
     )
-    val validImage = if (imageResId != 0) imageResId else R.drawable.monstruo_2
+    val validImage = if (imageResId != 0) imageResId else R.drawable.monstruo
 
     Image(
         painter = painterResource(id = validImage),

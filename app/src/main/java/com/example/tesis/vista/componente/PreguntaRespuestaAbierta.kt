@@ -38,8 +38,6 @@ fun PreguntaRespuestaAbierta(
 
         //Spacer(modifier = Modifier.height(16.dp))
 
-
-
         Row (
             modifier = Modifier
                 .padding(start = 100.dp)
@@ -99,9 +97,7 @@ fun PreguntaRespuestaAbierta(
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = if (isNumeric) KeyboardType.Number else KeyboardType.Text,
                                         imeAction = ImeAction.Next
-                                    ),
-                                    //modifier = Modifier
-                                    //    .padding(top = 100.dp)
+                                    )
                                 )
                             }
                         }
