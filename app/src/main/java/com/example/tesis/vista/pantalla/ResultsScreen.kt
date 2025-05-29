@@ -48,6 +48,7 @@ fun ResultsScreen(
     val resultadoDao = db.resultadoDao()
     val estudiante = sharedViewModel.estudiante
     val resultadoPrueba = sharedViewModel.resultado
+    val cantidadPreguntas = preguntaDao.getCantidadPreguntas()
 
 
     var idResultado by remember{ mutableIntStateOf(resultadoPrueba?.id ?: 0) }
@@ -57,6 +58,9 @@ fun ResultsScreen(
 
     var resultado by remember { mutableStateOf(resultadoDao.getResultadoById(idResultado)) }
 
+    var potLing by remember { mutableIntStateOf(0) }
+    var potMus by remember { mutableIntStateOf(0) }
+    var potIntra by remember { mutableIntStateOf(0) }
     var contLing by remember { mutableIntStateOf(0) }
     var contMat by remember { mutableIntStateOf(0) }
     var contEsp by remember { mutableIntStateOf(0) }
@@ -71,7 +75,7 @@ fun ResultsScreen(
     val validador = ValidadorUtils()
 
     LaunchedEffect(Unit) {
-        for (i in 1..15) {
+        for (i in 1..cantidadPreguntas) {
             pregunta = preguntaDao.getPreguntaById(idPregunta ?: 0)
             resultado = resultadoDao.getResultadoById(idResultado)
 
@@ -80,27 +84,58 @@ fun ResultsScreen(
                     resultado?.respuesta ?: "",
                     pregunta?.respuestaCorrecta ?: ""
                 )
-                4 -> validador.isArrastrarYUbicarCorrecto(
+                4 ->
+                    if(idPregunta == 17){
+                        validador.isMinimoItemsCorrectos(
+                            resultado?.respuesta ?: "",
+                            pregunta?.respuestaCorrecta ?: "",
+                            10
+                        )
+                    } else{
+                        validador.isArrastrarYUbicarCorrecto(
+                            resultado?.respuesta ?: "",
+                            pregunta?.respuestaCorrecta ?: ""
+                        )
+                    }
+                else -> validador.compararSoloTexto(
                     resultado?.respuesta ?: "",
                     pregunta?.respuestaCorrecta ?: ""
                 )
-                else -> resultado?.respuesta == pregunta?.respuestaCorrecta
             }
 
             if (isCorrect) {
                 when (pregunta?.categoriaId) {
-                    1 -> contLing += 1
+                    1 ->
+                        if(idPregunta == 1){
+                            potLing += 1
+                        }else{
+                            contLing += 1
+                        }
                     2 -> contMat += 1
                     3 -> contEsp += 1
-                    4 -> contMus += 1
+                    4 ->
+                        if(idPregunta == 2){
+                            potMus += 1
+                        }else{
+                            contMus += 1
+                        }
                     5 -> contCor += 1
                     6 -> contInter += 1
-                    7 -> contIntra += 1
+                    7 ->
+                        if(idPregunta == 2){
+                            potIntra += 1
+                        }else{
+                            contIntra += 1
+                        }
                     8 -> contNatu += 1
                 }
             }
             Log.d("Validation", "Expected: ${pregunta?.respuestaCorrecta}")
             Log.d("Validation", "Given: ${resultado?.respuesta}")
+            if(pregunta?.tipoPregunta==4){
+                Log.d("isCorrect", isCorrect.toString())
+            }
+            Log.d("contEsp", contEsp.toString())
 
             idPregunta = idPregunta?.plus(1)
             idResultado += 1

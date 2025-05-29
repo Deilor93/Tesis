@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -41,6 +42,7 @@ import androidx.navigation.NavController
 import com.example.tesis.logica.DbClass
 import com.example.tesis.logica.Resultado
 import com.example.tesis.vista.component.PreguntaArrastrarYUbicar
+import com.example.tesis.vista.component.PreguntaClasificarConArrastre
 import com.example.tesis.vista.componente.AnimacionImagenPorNivel
 import com.example.tesis.vista.componente.PreguntaPatronInteractivo
 import com.example.tesis.vista.componente.PreguntaRespuestaAbierta
@@ -52,9 +54,9 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import com.example.tesis.vista.componente.StepsProgressBar
+import com.example.tesis.vista.modelo.DraggableItem
 import com.example.tesis.vista.util.FormatUtil
 import com.example.tesis.vista.viewmodel.SharedViewModel
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -97,6 +99,10 @@ fun TestScreen(
 
     var userDragMatchResult by remember { mutableStateOf("") }
 
+    val answersMap = remember { mutableStateMapOf<String, String>() }
+    var isClassificationAnswerGiven by remember { mutableStateOf(false) }
+
+
     val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
     val current = LocalDateTime.now().format(formatter)
 
@@ -104,8 +110,19 @@ fun TestScreen(
 
 
     val amigosSoly = sharedViewModel.amigosSoly
+    val bichos = sharedViewModel.bichos
+    val puzzle = sharedViewModel.puzzle
+    var currentDragItems by remember { mutableStateOf<List<DraggableItem>>(emptyList()) }
     val assignedStatus = sharedViewModel.assignedStatus
 
+    val labelsP23 = sharedViewModel.p23
+    val labelsP39 = sharedViewModel.p39
+    val labelsP40 = sharedViewModel.p40
+    val labelsP41 = sharedViewModel.p41
+    val figurasP23 = sharedViewModel.figurasP23
+    val figuras39 = sharedViewModel.figurasP39
+    val animalesSombra = sharedViewModel.animalesSombra
+    val figurasP41 = sharedViewModel.figurasP41
 
     //Actualizar dinamicamente variables cambiantes
     LaunchedEffect(idPregunta, idRespuesta) {
@@ -114,11 +131,26 @@ fun TestScreen(
         tipoPregunta = pregunta?.tipoPregunta ?: 0
         respuesta = respuestaDao.getRespuestaById(idRespuesta)
     }
+    //Actualiza las posiciones de los objetos con cada movimiento para evitar errores de no asignacion de posicion
     LaunchedEffect(amigosSoly) {
         snapshotFlow {
             amigosSoly.map { it.assignedCell }
         }.collect {
             userDragMatchResult = FormatUtil.formatDragMatchResult(amigosSoly)
+        }
+    }
+    LaunchedEffect(bichos) {
+        snapshotFlow {
+            bichos.map { it.assignedCell }
+        }.collect {
+            userDragMatchResult = FormatUtil.formatDragMatchResult(bichos)
+        }
+    }
+    LaunchedEffect(puzzle) {
+        snapshotFlow {
+            puzzle.map { it.assignedCell }
+        }.collect {
+            userDragMatchResult = FormatUtil.formatDragMatchResult(puzzle)
         }
     }
 
@@ -143,11 +175,12 @@ fun TestScreen(
         selectedOption,
         userPattern,
         userAnswers,
-        assignedStatus
-    ){
+        assignedStatus,
+        isClassificationAnswerGiven // Add this!
+    ) {
         derivedStateOf {
             when (tipoPregunta) {
-                1 -> selectedOption != null
+                1 -> isClassificationAnswerGiven // Use the new Boolean
                 2 -> userPattern.isNotBlank()
                 3 -> userAnswers.all { it.isNotBlank() }
                 4 -> assignedStatus.all { it }
@@ -155,6 +188,8 @@ fun TestScreen(
             }
         }
     }
+
+
     LaunchedEffect(isAnswerGiven) {
         Log.d("Validation", "isAnswerGiven = $isAnswerGiven")
     }
@@ -164,12 +199,13 @@ fun TestScreen(
             try {
                 val pregunta = db.preguntaDao().getPreguntaById(preguntaIdSnapshot)
                 val answerToSave = when (tipoPregunta) {
-                    1 -> selectedOption ?: ""
+                    1 -> answersMap.entries.joinToString(",") { "${it.key}:${it.value}" }
                     2 -> userPattern
                     3 -> userAnswers.joinToString(",")
-                    4 -> FormatUtil.formatDragMatchResult(amigosSoly)
+                    4 -> FormatUtil.formatDragMatchResult(currentDragItems)
                     else -> ""
                 }
+
                 if (estudiante != null && pregunta != null) {
                     val resultado = Resultado(
                         estudianteId = estudiante.id,
@@ -218,10 +254,9 @@ fun TestScreen(
                     verticalAlignment = Alignment.Top
                 ) {
                     //Columna mapa
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                    Box(
                         modifier = Modifier.weight(1f)
+                            .align(Alignment.CenterVertically)
                     ){
                         StepsProgressBar(
                             modifier = Modifier.fillMaxWidth(),
@@ -249,14 +284,26 @@ fun TestScreen(
                     when (tipoPregunta) {
                         1-> {
                             // Preguntas seleccion multiple
-                            SeleccionMultiple(
+                            /*SeleccionMultiple(
                                 context = context,
                                 idPregunta = idPregunta,
                                 questionText = preguntaText,
                                 radioOptions = radioOptions,
                                 selectedOption = selectedOption,
                                 onOptionSelected = onOptionSelected
+                            )*/
+                            PreguntaClasificarConArrastre(
+                                context = context,
+                                idPregunta = 1,
+                                preguntaText = "Clasifica los objetos",
+                                items = animalesSombra, // Your draggable items list
+                                gridLabels = labelsP40,
+                                gridSize = 4,
+                                onAssignmentChanged = { statusList ->
+                                    isClassificationAnswerGiven = statusList.all { it }
+                                }
                             )
+
                         }
                         2 -> {
                             // Pregunta de patron interactivo
@@ -279,18 +326,51 @@ fun TestScreen(
                             )
                         }
                         4 -> {
-                            // Pregunta de mover objetos
-                            PreguntaArrastrarYUbicar(
-                                context = context,
-                                idPregunta = idPregunta,
-                                preguntaText = preguntaText,
-                                items = amigosSoly,
-                                gridSize = 4,
-                                onAssignmentChanged = { statusList ->
-                                    assignedStatus.clear()
-                                    assignedStatus.addAll(statusList)
+                                // Pregunta de mover objetos
+                            when(idPregunta){
+                                15->{
+                                    PreguntaArrastrarYUbicar(
+                                        context = context,
+                                        idPregunta = idPregunta,
+                                        preguntaText = preguntaText,
+                                        items = amigosSoly,
+                                        gridSize = 4,
+                                        onAssignmentChanged = { statusList ->
+                                            assignedStatus.clear()
+                                            assignedStatus.addAll(statusList)
+                                        }
+                                    )
+                                    currentDragItems = amigosSoly
                                 }
-                            )
+                                17->{
+                                    PreguntaArrastrarYUbicar(
+                                        context = context,
+                                        idPregunta = idPregunta,
+                                        preguntaText = preguntaText,
+                                        items = bichos,
+                                        gridSize = 4,
+                                        onAssignmentChanged = { statusList ->
+                                            assignedStatus.clear()
+                                            assignedStatus.addAll(statusList)
+                                        }
+                                    )
+                                    currentDragItems = bichos
+                                }
+                                18->{
+                                    PreguntaArrastrarYUbicar(
+                                        context = context,
+                                        idPregunta = idPregunta,
+                                        preguntaText = preguntaText,
+                                        items = puzzle,
+                                        gridSize = 4,
+                                        onAssignmentChanged = { statusList ->
+                                            assignedStatus.clear()
+                                            assignedStatus.addAll(statusList)
+                                        }
+                                    )
+                                    currentDragItems = puzzle
+                                }
+                            }
                         }
                     }
                 }

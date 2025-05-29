@@ -23,9 +23,8 @@ fun ImagenPregunta(
     )
     val validImage = if (imageResId != 0) imageResId else R.drawable.monstruo
 
-    Image(
-        painter = painterResource(id = validImage),
-        contentDescription = "Imagen para pregunta $idPregunta",
-        modifier = modifier
+    MostrarGif(
+        modifier = modifier,
+        resourceId = validImage
     )
 }

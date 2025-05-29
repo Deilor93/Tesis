@@ -18,8 +18,8 @@ import kotlin.random.Random
 
 @Composable
 fun AnimacionImagenPorNivel(
-    currentStep: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    currentStep: Int
 ) {
     val imageStep = currentStep / 5
 
@@ -27,18 +27,20 @@ fun AnimacionImagenPorNivel(
 
     var showGif by remember { mutableStateOf(false) }
 
-    // Index of the image currently shown
+    // Indice de la imagen actualmente mostrada
     var displayedImageIndex by remember { mutableStateOf(0) }
+    //Selecciona aleatoriamente una de las tres posibles lineas de evolucion
+    val imgSelector = Random.nextInt(3)
 
-    val imgSelector = Random.nextInt(2)
-
-    // Track when we need to animate
+    // Mantiene el registro de cuando se debe actualizar la imagen
     LaunchedEffect(imageStep) {
+        //Muestra el GIF 800 milisegundos cuando se hace el cambio de imagen
         if (hasStartedOnce && imageStep != displayedImageIndex) {
             showGif = true
             delay(800)
             displayedImageIndex = imageStep
             showGif = false
+        //Mantiene la imagen mostrada en pantalla cuando no se muestra el GIF
         } else {
             hasStartedOnce = true
             displayedImageIndex = imageStep
@@ -48,38 +50,49 @@ fun AnimacionImagenPorNivel(
     val solyPirata = listOf(
         R.drawable.monstruo,
         R.drawable.monstruo_1,
+        R.drawable.monstruo_1_1,
         R.drawable.monstruo_1_2,
-        R.drawable.monstruo_1_3
+        R.drawable.monstruo_1_3,
+        R.drawable.monstruo_1_4,
+        R.drawable.monstruo_1_5,
     )
 
     val solyCaballero = listOf(
         R.drawable.monstruo,
         R.drawable.monstruo_2,
+        R.drawable.monstruo_2_1,
         R.drawable.monstruo_2_2,
-        R.drawable.monstruo_2_3
+        R.drawable.monstruo_2_3,
+        R.drawable.monstruo_2_4,
+        R.drawable.monstruo_2_5
     )
 
-    val solyAstronauta = listOf(
+    val solyPrincipe = listOf(
         R.drawable.monstruo,
-        R.drawable.monstruo_1,
-        R.drawable.monstruo_1_2,
-        R.drawable.monstruo
+        R.drawable.monstruo_3,
+        R.drawable.monstruo_3_1,
+        R.drawable.monstruo_3_2,
+        R.drawable.monstruo_3_3,
+        R.drawable.monstruo_3_4,
+        R.drawable.monstruo_3_5,
+
     )
     val solyImages = remember {
         when (imgSelector) {
             0 -> solyPirata
             1 -> solyCaballero
-            3 -> solyAstronauta
+            3 -> solyPrincipe
             else -> listOf(R.drawable.monstruo)
         }
     }
 
+    //Selecciona la imagen basada en el indice
     val selectedImage = solyImages.getOrElse(displayedImageIndex % solyImages.size) {
         R.drawable.monstruo
     }
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        // Show GIF on top when active
+        // Muestra el GIF sobre la imagen cuando se activa
         AnimatedVisibility(
             visible = showGif,
             enter = fadeIn(),
@@ -88,7 +101,7 @@ fun AnimacionImagenPorNivel(
             MostrarGif(modifier = Modifier.size(300.dp))
         }
 
-        // Show image only when GIF is not showing
+        // Muestra la imagen solo cuando el GIF no esta presente
         AnimatedVisibility(
             visible = !showGif,
             enter = fadeIn(),

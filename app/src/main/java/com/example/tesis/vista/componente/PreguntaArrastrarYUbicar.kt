@@ -10,9 +10,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.example.tesis.vista.componente.AnimacionTexto
-import com.example.tesis.vista.componente.ImagenArrastrable
+import com.example.tesis.vista.componente.ImagenArrastrableSnapping
 import com.example.tesis.vista.modelo.DraggableItem
 import com.example.tesis.vista.modelo.GridCell
 import com.example.tesis.vista.util.ImagenPregunta
@@ -38,10 +39,12 @@ fun PreguntaArrastrarYUbicar(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val cellSizePx = 100f
+        val cellSizeDp = 75.dp
+        val cellSizePx = with(LocalDensity.current) { cellSizeDp.toPx() }
+
         val visibleGridSize = gridSize
-        val totalRows = gridSize + 1 // Agrega una fila extra invisible para los items fuera del grid
-        val totalColumns = maxOf(gridSize, items.size) //Columnas extra invisibles para los items fuera del grid
+        val totalRows = gridSize
+        val totalColumns = gridSize * 2 //Columnas extra invisibles para los items fuera del grid
 
         //Crea el grid de celdas sobre el cual se van a poner los items
         val gridCells = remember {
@@ -98,24 +101,23 @@ fun PreguntaArrastrarYUbicar(
                 LaunchedEffect(Unit) {
                     items.forEachIndexed { index, item ->
                         if (item.assignedCell == null) {
-                            val row = visibleGridSize
-                            val col = index // Permite que se repartan por toda la fila
+                            val row = index / gridSize
+                            val col = gridSize + index % gridSize
+
                             val cell = gridCells.firstOrNull { it.row == row && it.column == col }
                             item.assignedCell = cell
                             onAssignmentChanged(
-                                items.map { item ->
-                                    item.assignedCell?.let { it.row in 0 until gridSize &&
-                                            it.column in 0 until gridSize } == true
-                                }
+                                items.map { it.assignedCell?.let { c ->
+                                    c.row in 0 until gridSize && c.column in 0 until gridSize
+                                } == true }
                             )
-
                         }
                     }
                 }
 
-                // Crea los tems arrastrables sobre el grid en sus celdas asignadas
+                // Crea los tems arrastrables sobre el grid invsible
                 items.forEach { item ->
-                    ImagenArrastrable(
+                    ImagenArrastrableSnapping(
                         item = item,
                         gridCells = gridCells,
                         allItems = items,

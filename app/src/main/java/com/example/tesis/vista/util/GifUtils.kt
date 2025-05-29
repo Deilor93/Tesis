@@ -32,9 +32,9 @@ fun GifLoader(resourceId: Int, modifier: Modifier = Modifier) {
 }
 //Carga el gif utilizando el loader creado
 @Composable
-fun MostrarGif(modifier: Modifier) {
+fun MostrarGif(modifier: Modifier, resourceId: Int = R.drawable.smoke_gif) {
     GifLoader(
-        resourceId = R.drawable.smoke_gif,
-        modifier = modifier
+        modifier = modifier,
+        resourceId = resourceId,
     )
 }

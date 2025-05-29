@@ -48,7 +48,8 @@ fun PreguntaRespuestaAbierta(
              * que el usuario puede utilizar*/
 
             val isNumeric = preguntaText.lowercase().contains("cuánt") ||
-                       preguntaText.lowercase().contains("núm")
+                       preguntaText.lowercase().contains("núm") ||
+                        preguntaText.lowercase().contains("teso")
 
             val chunkedOptions = radioOptions.chunked((radioOptions.size + 1) / 2)
 

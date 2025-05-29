@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
@@ -25,18 +26,17 @@ fun ImagenArrastrable(
     allItems: List<DraggableItem>,
     initialOffset: Offset,
     cellSize: Float,
-    visibleGridSize: Int,
+    gridWidth: Float,
+    gridHeight: Float,
     onAssignmentChanged: (List<Boolean>) -> Unit
 ) {
-    // El offset debe ser persistente incluso si el composable se re compone
     var offset by remember { mutableStateOf(initialOffset) }
 
-    // Asegura actualizacion del offset durante la composicion del composable
     LaunchedEffect(item.assignedCell) {
         item.assignedCell?.let { cell ->
             offset = Offset(
-                cell.position.x + (cellSize / 2) - 60f,
-                cell.position.y + (cellSize / 2) - 60f
+                cell.position.x + cellSize / 2 - 40f,
+                cell.position.y + cellSize / 2 - 40f
             )
         }
     }
@@ -49,41 +49,30 @@ fun ImagenArrastrable(
                 detectDragGestures(
                     onDrag = { change, dragAmount ->
                         change.consume()
-                        offset += dragAmount
+                        val newOffset = offset + dragAmount
+                        offset = Offset(
+                            newOffset.x.coerceIn(0f, gridWidth - 80f),
+                            newOffset.y.coerceIn(0f, gridHeight - 80f)
+                        )
                     },
                     onDragEnd = {
-                        //Limita las casillas disponibles a las casillas visibles y las casillas desocupadas
-                        val availableCells = gridCells.filter { cell ->
-                            cell.row < visibleGridSize &&/*Previene que los items se pongan en
-                                                            la fila invisible despues de moverlos*/
-                            cell.column < visibleGridSize &&/*Previene que los items se pongan
-                                                                en lsa columnas invisibles*/
-                            allItems.none { it.assignedCell?.index == cell.index } /*Previene que los
-                                                        items se puedan sobrelapar en la misma celda*/
-                        }
-
-                        // Busca la celda vacia mas cercana delimitado por las restricciones anteriores
-                        val nearestCell = availableCells.minByOrNull { cell ->
+                        val nearestCell = gridCells.minByOrNull { cell ->
                             hypot(
-                                (cell.position.x + cellSize / 2) - (offset.x + 60f),
-                                (cell.position.y + cellSize / 2) - (offset.y + 60f)
+                                (cell.position.x + cellSize / 2) - (offset.x + 40f),
+                                (cell.position.y + cellSize / 2) - (offset.y + 40f)
                             )
                         }
 
                         nearestCell?.let { cell ->
                             item.assignedCell = cell
                             offset = Offset(
-                                cell.position.x + (cellSize / 2) - 60f,
-                                cell.position.y + (cellSize / 2) - 60f
+                                cell.position.x + (cellSize / 2) - 40f,
+                                cell.position.y + (cellSize / 2) - 40f
                             )
                         }
 
                         onAssignmentChanged(
-                            allItems.map {
-                                it.assignedCell?.let { cell ->
-                                    cell.row in 0 until visibleGridSize && cell.column in 0 until visibleGridSize
-                                } == true
-                            }
+                            allItems.map { it.assignedCell?.let { c -> c.column in 0..Int.MAX_VALUE } == true }
                         )
                     }
                 )
@@ -93,7 +82,7 @@ fun ImagenArrastrable(
         Image(
             painter = painterResource(id = item.imageResId),
             contentDescription = item.id,
-            modifier = Modifier.size(80.dp)
+            modifier = Modifier.size(70.dp)
         )
     }
 }

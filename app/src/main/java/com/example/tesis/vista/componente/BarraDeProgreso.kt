@@ -34,7 +34,7 @@ fun StepsProgressBar(
     val density = LocalDensity.current
     val stepWidthPx = with(density) { stepWidth.toPx() }
 
-    val scrollbarHeight = 4.dp
+    //val scrollbarHeight = 2.dp
 
     BoxWithConstraints(
         modifier = modifier.height(100.dp)
@@ -55,15 +55,16 @@ fun StepsProgressBar(
         }
 
         Column{
-        // Main steps row
+        // Fila para mostrar los pasos de forma lineal lado a lado
             Row(
                 modifier = Modifier
                     .horizontalScroll(scrollState)
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 8.dp)
+                    .weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 for (i in 0 until numberOfSteps) {
-
+                    //Validacion para que las estrellas multiplos de 5 sean mas grandes que las demas
                     if ((i - 4) % 5 == 0 && i >= 4){
                         StepWithLine(
                             modifier = Modifier.size(120.dp),
@@ -81,12 +82,13 @@ fun StepsProgressBar(
                     }
                 }
             }
-            // Optional: custom scrollbar
-            Box(
+            // Barra de scroll para visualizar el camino de progreso
+            /*Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(scrollbarHeight)
                     .padding(horizontal = 8.dp)
+                    .weight(0.1f)
             ) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val trackColor = Color.LightGray.copy(alpha = 0.3f)
@@ -113,7 +115,7 @@ fun StepsProgressBar(
                         )
                     }
                 }
-            }
+            }*/
         }
     }
 }
@@ -127,7 +129,7 @@ fun StepWithLine(
 ) {
     val animatedProgress = remember { Animatable(0f) }
 
-    // Animate when the step becomes complete
+    // Anima el llenado de la barra al completar un paso
     LaunchedEffect(isComplete) {
         if (isComplete) {
             animatedProgress.animateTo(
@@ -145,7 +147,7 @@ fun StepWithLine(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        // Draw animated connecting line
+        // Dibuja la linea de conexion para animar
         if (stepIndex > 0) {
             Box(
                 modifier = Modifier
@@ -168,7 +170,7 @@ fun StepWithLine(
                 )
             }
         }
-
+        //Validacion para que el delay de pintado de la estella se aplique solo a partir de la segunda
         if (stepIndex == 0){
             Step(
                 modifier = modifier,

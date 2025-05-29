@@ -17,6 +17,7 @@ object FormatUtil {
             }
         }
     }
+
     /**
      * Parser para los strings con formato "A:1-2,B:0-3,C:null"
      * Retorna un Map donde la llave es le ID del objeto y el valor es un par de fila y columna
