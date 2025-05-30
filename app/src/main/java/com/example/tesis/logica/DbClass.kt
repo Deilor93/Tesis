@@ -72,7 +72,7 @@ abstract class DbClass : RoomDatabase() {
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (20, 'Dile a Soly si te gusta dormir', 'Si', 5, 1);")
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (21, 'A Soly le gustaría saber si te gusta ver televisión', 'No', 5, 1);")
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (22, 'Cuentale a Soly si te gusta hacer tareas y estudiar', 'No', 5, 1);")
-                            //db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (23, 'Utiliza al menos cinco de las siguientes figuras para construir algo', 'Si', 5, 4);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (23, 'Utiliza al menos cinco de las siguientes figuras para construir algo', 'Si', 5, 5);")
                             //Preguntas Mus
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (24, 'Te gusta bailar?', 'Si', 4, 1);")
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (25, 'Te interesa aprender a tocar algun instrumento?', 'Si', 4, 1);")
@@ -92,11 +92,11 @@ abstract class DbClass : RoomDatabase() {
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (37, 'Te parece que los niños de la imagen necesitan ayuda?', 'Si', 6, 1);")
                             db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (38, 'Tu ayudarias a los niños que viste antes?', 'Si', 6, 1);")
                             //Preguntas Natu
-                            //db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (39, 'Ayuda a Soly a clasificar los animales', 'Si', 8, 4);")
-                            //db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (40, 'Soly quiere relacionar cada uno de los animales con su propia sombra, ayudale!', 'Si', 8, 4);")
-                            //db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (41, 'Observa los objetos y ayuda a Soly a organizarlos en conjuntos de acuerdo a lo que tienen en comun', 'Si', 8, 4);")
-                            //db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (42, 'Te gusta observar los animales y las plantas?', 'Si', 8, 1);")
-                            //db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (43, 'Si tu maestro te invita a buscar con una lupa animales en el patio, te gustaría hacerlo?', 'Si', 8, 1);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (39, 'Ayuda a Soly a clasificar los animales', 'A:Animales de granja,B:Dinosaurios,C:Dinosaurios,D:Dinosaurios,E:Animales de granja,F:Animales de granja,G:Animales de granja,H:Dinosaurios,I:Animales de granja,J:Dinosaurios', 8, 5);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (40, 'Soly quiere relacionar cada uno de los animales con su propia sombra, ayudale!', 'A:Gorila,B:Pez,C:Caracol,D:Zebra,E:Pajaro', 8, 5);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (41, 'Observa los objetos y ayuda a Soly a organizarlos en conjuntos de acuerdo a lo que tienen en comun', 'A:Utiles Escolares,B:Utiles Escolares,C:Animales,D:Frutas,E:Frutas,F:Animales,G:Animales,H:Utiles Escolares,I:Uvas', 8, 5);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (42, 'Te gusta observar los animales y las plantas?', 'Si', 8, 1);")
+                            db.execSQL("INSERT INTO preguntas (id, pregunta, respuestaCorrecta, categoriaId, tipoPregunta) VALUES (43, 'Si tu maestro te invita a buscar con una lupa animales en el patio, te gustaría hacerlo?', 'Si', 8, 1);")
 
                             // Insert into respuestas
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (1, 1, 'Si,No');")
@@ -137,11 +137,11 @@ abstract class DbClass : RoomDatabase() {
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (36, 36, 'Si,No');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (37, 37, 'Si,No');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (38, 38, 'Si,No');")
-                            //db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (39, 39, 'Clasifica');")
-                            //db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (40, 40, 'Relaciona');")
-                            //db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (41, 41, 'Si,No');")
-                            //db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (42, 42, 'Organiza');")
-                            //db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (43, 43, 'Si,No');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (39, 39, 'Clasifica');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (40, 40, 'Relaciona');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (41, 41, 'Si,No');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (42, 42, 'Organiza');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (43, 43, 'Si,No');")
 
 
                             //Insert into recomendaciones

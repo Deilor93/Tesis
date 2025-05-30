@@ -1,62 +1,43 @@
-package com.example.tesis.vista.component
+package com.example.tesis.vista.componente
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.*
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.sp
 import com.example.tesis.vista.componente.AnimacionTexto
-import com.example.tesis.vista.componente.ImagenArrastrable
+import com.example.tesis.vista.componente.ImagenArrastrableSnapping
 import com.example.tesis.vista.modelo.DraggableItem
 import com.example.tesis.vista.modelo.GridCell
-import kotlin.math.roundToInt
+import com.example.tesis.vista.util.ImagenPregunta
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun PreguntaClasificarConArrastre(
     context: Context,
     idPregunta: Int,
     preguntaText: String,
     items: List<DraggableItem>,
-    gridSize: Int,
-    gridLabels: List<String>,
-    onAssignmentChanged: (List<Boolean>) -> Unit
+    containerLabels: List<String>,
+    onAssignmentChanged: (List<String>) -> Unit
 ) {
+    val gridCells = remember { mutableStateListOf<GridCell>() }
     val density = LocalDensity.current
-    val cellSizeDp = 75.dp
-    val cellSizePx = with(density) { cellSizeDp.toPx() }
-    val totalGrids = gridLabels.size
-
-    val gridCells = remember {
-        val cells = mutableListOf<GridCell>()
-        var index = 0
-        for (gridIndex in 0 until totalGrids) {
-            for (row in 0 until gridSize) {
-                for (col in 0 until gridSize) {
-                    val x = (gridIndex * gridSize + col) * cellSizePx
-                    val y = row * cellSizePx
-                    cells.add(GridCell(
-                        index = index,
-                        row = row,
-                        column = (col + gridIndex * gridSize),
-                        position = Offset(x, y)))
-                }
-            }
-        }
-        cells
-    }
 
     Column(
         modifier = Modifier
@@ -67,75 +48,101 @@ fun PreguntaClasificarConArrastre(
         AnimacionTexto(preguntaText)
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Dynamic grid layout: each box fills equal space horizontally
-        Row(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(cellSizeDp * gridSize),
-            horizontalArrangement = Arrangement.SpaceEvenly
+                .height(300.dp) // Enough height for both cells + items
         ) {
-            gridLabels.forEach { label ->
+            val cellWidthPx = constraints.maxWidth.toFloat() / containerLabels.size
+            val cellWidthDp = with(density) { cellWidthPx.toDp() }
+            val cellHeightDp = 300.dp
+            val cellHeightPx = with(density) { cellHeightDp.toPx() }
+
+            items.forEachIndexed { index, item ->
+                if (item.assignedCell == null) {
+                    val posX = (100f * index) + (100 / 2)
+                    val posY = cellHeightPx + 50f
+                    item.assignedCell = GridCell(
+                        index = -1,
+                        row = -1,
+                        column = -1,
+                        position = Offset(posX, posY)
+                    )
+                }
+            }
+
+            // Create cells
+            containerLabels.forEachIndexed { index, label ->
                 Column(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
+                        .offset { IntOffset((cellWidthPx * index).toInt(), 0) }
+                        .width(cellWidthDp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = label)
+                    Text(
+                        text = label,
+                        modifier = Modifier.padding(bottom = 4.dp),
+                        fontSize = 14.sp
+                    )
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(4.dp)
-                    ) {
-                        Canvas(modifier = Modifier.fillMaxSize()) {
-                            drawRect(
-                                color = Color.Black,
-                                style = Stroke(3f)
-                            )
-                        }
+                            .height(cellHeightDp)
+                            .fillMaxWidth()
+                            .border(2.dp, Color.Black)
+                            .onGloballyPositioned { coordinates ->
+                                val pos = coordinates.positionInParent()
+                                val cell = GridCell(
+                                    index = index,
+                                    row = 0,
+                                    column = index,
+                                    position = pos,
+                                    label = label
+                                )
+                                if (gridCells.none { it.index == index }) {
+                                    gridCells.add(cell)
+                                } else {
+                                    gridCells[index] = cell
+                                }
+                            }
+                    )
+                }
+            }
+
+
+            // Initialize items below the cells with correct spacing
+            LaunchedEffect(Unit) {
+                val spacingX = 100f  // Centered per item
+                items.forEachIndexed { index, item ->
+                    if (item.assignedCell == null) {
+                        val posX = (spacingX * index) + spacingX / 2
+                        val posY = cellHeightPx + 50f  // 50px below cells
+                        item.assignedCell = GridCell(
+                            index = -1,
+                            row = -1,
+                            column = -1,
+                            position = Offset(posX, posY)
+                        )
                     }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Initialize item positions
-        LaunchedEffect(Unit) {
-            items.forEachIndexed { index, item ->
-                if (item.assignedCell == null) {
-                    val row = index / gridSize
-                    val col = totalGrids * gridSize + index % gridSize
-                    val cell = gridCells.firstOrNull { it.row == row && it.column == col }
-                    item.assignedCell = cell
-                }
-            }
-            onAssignmentChanged(items.map { it.assignedCell?.column ?: -1 in 0 until (totalGrids * gridSize) })
-        }
-
-        // Draggable items on top of the grid layout
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(cellSizeDp * gridSize)
-        ) {
+            // Render draggable items on top
             items.forEach { item ->
                 ImagenArrastrable(
                     item = item,
                     gridCells = gridCells,
                     allItems = items,
-                    initialOffset = item.assignedCell?.let {
-                        Offset(
-                            it.position.x + cellSizePx / 2 - 40f,
-                            it.position.y + cellSizePx / 2 - 40f
+                    cellWidthPx = cellWidthPx,
+                    cellHeightPx = cellHeightPx,
+                    initialOffset = item.assignedCell?.position ?: Offset.Zero,
+                    onAssignmentChanged = { updatedAssignments ->
+                        onAssignmentChanged(
+                            items.map { it.assignedCell?.let { cell ->
+                                "${it.id}:${cell.label ?: "Ninguno"}"
+                            } ?: "${it.id}:Ninguno" }
                         )
-                    } ?: Offset.Zero,
-                    cellSize = cellSizePx,
-                    gridWidth = totalGrids * gridSize * cellSizePx,
-                    gridHeight = gridSize * cellSizePx,
-                    onAssignmentChanged = onAssignmentChanged
+                    }
                 )
             }
-        }
-    }
+        }}
 }

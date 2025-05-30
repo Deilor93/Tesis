@@ -1,4 +1,4 @@
-package com.example.tesis.vista.component
+package com.example.tesis.vista.componente
 
 import android.content.Context
 import androidx.compose.foundation.Canvas

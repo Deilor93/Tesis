@@ -1,5 +1,6 @@
 package com.example.tesis.vista.componente
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
@@ -25,21 +26,13 @@ fun ImagenArrastrable(
     gridCells: List<GridCell>,
     allItems: List<DraggableItem>,
     initialOffset: Offset,
-    cellSize: Float,
-    gridWidth: Float,
-    gridHeight: Float,
+    cellWidthPx: Float,
+    cellHeightPx: Float,
     onAssignmentChanged: (List<Boolean>) -> Unit
 ) {
     var offset by remember { mutableStateOf(initialOffset) }
 
-    LaunchedEffect(item.assignedCell) {
-        item.assignedCell?.let { cell ->
-            offset = Offset(
-                cell.position.x + cellSize / 2 - 40f,
-                cell.position.y + cellSize / 2 - 40f
-            )
-        }
-    }
+
 
     Box(
         modifier = Modifier
@@ -49,40 +42,35 @@ fun ImagenArrastrable(
                 detectDragGestures(
                     onDrag = { change, dragAmount ->
                         change.consume()
-                        val newOffset = offset + dragAmount
-                        offset = Offset(
-                            newOffset.x.coerceIn(0f, gridWidth - 80f),
-                            newOffset.y.coerceIn(0f, gridHeight - 80f)
-                        )
+                        offset += dragAmount
                     },
                     onDragEnd = {
                         val nearestCell = gridCells.minByOrNull { cell ->
                             hypot(
-                                (cell.position.x + cellSize / 2) - (offset.x + 40f),
-                                (cell.position.y + cellSize / 2) - (offset.y + 40f)
+                                (cell.position.x + cellWidthPx / 2) - (offset.x + 40f),
+                                (cell.position.y + cellHeightPx / 2) - (offset.y + 40f)
                             )
                         }
 
                         nearestCell?.let { cell ->
+
                             item.assignedCell = cell
-                            offset = Offset(
-                                cell.position.x + (cellSize / 2) - 40f,
-                                cell.position.y + (cellSize / 2) - 40f
-                            )
+                            item.assignedLabel = cell.label
+
                         }
 
-                        onAssignmentChanged(
-                            allItems.map { it.assignedCell?.let { c -> c.column in 0..Int.MAX_VALUE } == true }
-                        )
+
+
+                        onAssignmentChanged(allItems.map { it.assignedCell != null })
                     }
                 )
             },
         contentAlignment = Alignment.Center
     ) {
         Image(
+            modifier = Modifier.size(70.dp),
             painter = painterResource(id = item.imageResId),
-            contentDescription = item.id,
-            modifier = Modifier.size(70.dp)
+            contentDescription = item.id
         )
     }
 }

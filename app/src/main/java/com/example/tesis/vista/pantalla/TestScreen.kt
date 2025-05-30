@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.tesis.logica.DbClass
 import com.example.tesis.logica.Resultado
-import com.example.tesis.vista.component.PreguntaArrastrarYUbicar
-import com.example.tesis.vista.component.PreguntaClasificarConArrastre
+import com.example.tesis.vista.componente.PreguntaArrastrarYUbicar
+import com.example.tesis.vista.componente.PreguntaClasificarConArrastre
 import com.example.tesis.vista.componente.AnimacionImagenPorNivel
 import com.example.tesis.vista.componente.PreguntaPatronInteractivo
 import com.example.tesis.vista.componente.PreguntaRespuestaAbierta
@@ -120,9 +120,28 @@ fun TestScreen(
     val labelsP40 = sharedViewModel.p40
     val labelsP41 = sharedViewModel.p41
     val figurasP23 = sharedViewModel.figurasP23
-    val figuras39 = sharedViewModel.figurasP39
+    val figurasP39 = sharedViewModel.figurasP39
     val animalesSombra = sharedViewModel.animalesSombra
     val figurasP41 = sharedViewModel.figurasP41
+
+
+    LaunchedEffect(isClassificationAnswerGiven) {
+        if (tipoPregunta == 1) {
+            currentDragItems = animalesSombra // Adjust for your question (or sharedViewModel source)
+        }
+    }
+    LaunchedEffect(animalesSombra) {
+        snapshotFlow {
+            animalesSombra.map { it.assignedCell }
+        }.collect {
+            val positionsLog = animalesSombra.joinToString { item ->
+                "${item.id}: ${item.assignedCell?.row}-${item.assignedCell?.column}"
+            }
+            Log.d("PositionChange", "Item positions: $positionsLog")
+        }
+    }
+
+
 
     //Actualizar dinamicamente variables cambiantes
     LaunchedEffect(idPregunta, idRespuesta) {
@@ -180,10 +199,11 @@ fun TestScreen(
     ) {
         derivedStateOf {
             when (tipoPregunta) {
-                1 -> isClassificationAnswerGiven // Use the new Boolean
+                1 -> selectedOption != null
                 2 -> userPattern.isNotBlank()
                 3 -> userAnswers.all { it.isNotBlank() }
                 4 -> assignedStatus.all { it }
+                5 -> isClassificationAnswerGiven
                 else -> false
             }
         }
@@ -199,10 +219,11 @@ fun TestScreen(
             try {
                 val pregunta = db.preguntaDao().getPreguntaById(preguntaIdSnapshot)
                 val answerToSave = when (tipoPregunta) {
-                    1 -> answersMap.entries.joinToString(",") { "${it.key}:${it.value}" }
+                    1 -> selectedOption ?: ""
                     2 -> userPattern
                     3 -> userAnswers.joinToString(",")
                     4 -> FormatUtil.formatDragMatchResult(currentDragItems)
+                    5 -> FormatUtil.formatDragPlaceResult(currentDragItems)
                     else -> ""
                 }
 
@@ -284,26 +305,14 @@ fun TestScreen(
                     when (tipoPregunta) {
                         1-> {
                             // Preguntas seleccion multiple
-                            /*SeleccionMultiple(
+                            SeleccionMultiple(
                                 context = context,
                                 idPregunta = idPregunta,
                                 questionText = preguntaText,
                                 radioOptions = radioOptions,
                                 selectedOption = selectedOption,
                                 onOptionSelected = onOptionSelected
-                            )*/
-                            PreguntaClasificarConArrastre(
-                                context = context,
-                                idPregunta = 1,
-                                preguntaText = "Clasifica los objetos",
-                                items = animalesSombra, // Your draggable items list
-                                gridLabels = labelsP40,
-                                gridSize = 4,
-                                onAssignmentChanged = { statusList ->
-                                    isClassificationAnswerGiven = statusList.all { it }
-                                }
                             )
-
                         }
                         2 -> {
                             // Pregunta de patron interactivo
@@ -326,7 +335,7 @@ fun TestScreen(
                             )
                         }
                         4 -> {
-                                // Pregunta de mover objetos
+                            // Pregunta de mover objetos
                             when(idPregunta){
                                 15->{
                                     PreguntaArrastrarYUbicar(
@@ -369,6 +378,71 @@ fun TestScreen(
                                         }
                                     )
                                     currentDragItems = puzzle
+                                }
+                            }
+                        }
+                        5 -> {
+                            // Pregunta de mover objetos
+                            when(idPregunta){
+                                23->{
+                                    PreguntaClasificarConArrastre(
+                                        context = context,
+                                        idPregunta = idPregunta,
+                                        preguntaText = preguntaText,
+                                        items = figurasP23,
+                                        containerLabels = labelsP23,
+                                        onAssignmentChanged = { assignments ->
+                                            isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
+                                            println("Assignments: $assignments")
+                                            Log.d("currentitem", currentDragItems.toString())
+                                        }
+                                    )
+                                    currentDragItems = figurasP23
+                                }
+                                39->{
+                                    PreguntaClasificarConArrastre(
+                                        context = context,
+                                        idPregunta = 1,
+                                        preguntaText = "Ubica los objetos en su lugar correspondiente",
+                                        items = figurasP39,
+                                        containerLabels = labelsP39,
+                                        onAssignmentChanged = { assignments ->
+                                            isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
+                                            println("Assignments: $assignments")
+                                            Log.d("currentitem", currentDragItems.toString())
+                                        }
+                                    )
+                                    currentDragItems = figurasP39
+                                }
+                                40->{
+                                    PreguntaClasificarConArrastre(
+                                        context = context,
+                                        idPregunta = 1,
+                                        preguntaText = "Ubica los objetos en su lugar correspondiente",
+                                        items = animalesSombra,
+                                        containerLabels = labelsP40,
+                                        onAssignmentChanged = { assignments ->
+                                            isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
+                                            println("Assignments: $assignments")
+                                            Log.d("currentitem", currentDragItems.toString())
+                                        }
+                                    )
+                                    currentDragItems = animalesSombra
+                                }
+                                41->{
+                                    PreguntaClasificarConArrastre(
+                                        context = context,
+                                        idPregunta = 1,
+                                        preguntaText = "Ubica los objetos en su lugar correspondiente",
+                                        items = figurasP41,
+                                        containerLabels = labelsP41,
+                                        onAssignmentChanged = { assignments ->
+                                            isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
+                                            println("Assignments: $assignments")
+                                            Log.d("currentitem", currentDragItems.toString())
+                                        }
+                                    )
+                                    currentDragItems = animalesSombra
                                 }
                             }
                         }
