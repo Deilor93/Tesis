@@ -17,6 +17,11 @@ class SharedViewModel : ViewModel() {
 
     var resultado: Resultado? by mutableStateOf(null)
 
+    var flagCor by mutableStateOf(false)
+
+    var potLing: Int = 0
+    var potMus: Int = 0
+    var potIntra: Int = 0
     var contLing: Int = 0
     var contMat: Int = 0
     var contEsp: Int = 0
@@ -106,8 +111,6 @@ class SharedViewModel : ViewModel() {
         DraggableItem("K", R.drawable.trapecio, correctLabel = "Trapecio"),
         DraggableItem("L", R.drawable.triangulo, correctLabel = "Triangulo")
     )
-
-    var resumenPregunta23Items by mutableStateOf<List<DraggableItem>>(emptyList())
 
     val p39: List<String> = listOf(
         "Animales de granja",

@@ -12,8 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.example.tesis.vista.componente.AnimacionTexto
-import com.example.tesis.vista.componente.ImagenArrastrableSnapping
 import com.example.tesis.vista.modelo.DraggableItem
 import com.example.tesis.vista.modelo.GridCell
 import com.example.tesis.vista.util.ImagenPregunta
@@ -137,4 +135,3 @@ fun PreguntaArrastrarYUbicar(
         }
     }
 }
-

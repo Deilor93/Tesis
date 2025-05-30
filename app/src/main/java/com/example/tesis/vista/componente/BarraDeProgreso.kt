@@ -12,9 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalDensity
@@ -30,11 +28,9 @@ fun StepsProgressBar(
     currentStep: Int
 ) {
     val scrollState = rememberScrollState()
-    val stepWidth = 140.dp
+    val stepWidth = 50.dp
     val density = LocalDensity.current
     val stepWidthPx = with(density) { stepWidth.toPx() }
-
-    //val scrollbarHeight = 2.dp
 
     BoxWithConstraints(
         modifier = modifier.height(100.dp)
@@ -82,40 +78,6 @@ fun StepsProgressBar(
                     }
                 }
             }
-            // Barra de scroll para visualizar el camino de progreso
-            /*Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(scrollbarHeight)
-                    .padding(horizontal = 8.dp)
-                    .weight(0.1f)
-            ) {
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val trackColor = Color.LightGray.copy(alpha = 0.3f)
-                    val thumbColor = Color.DarkGray
-
-                    val totalContentWidth = numberOfSteps * stepWidthPx
-                    val visibleWidthCanvas = size.width
-
-                    if (totalContentWidth > visibleWidthCanvas) {
-                        drawRoundRect(
-                            color = trackColor,
-                            size = size,
-                            cornerRadius = CornerRadius(10f)
-                        )
-
-                        val thumbWidth = visibleWidthCanvas * (visibleWidthCanvas / totalContentWidth)
-                        val thumbOffset = scrollState.value * (visibleWidthCanvas / totalContentWidth)
-
-                        drawRoundRect(
-                            color = thumbColor,
-                            topLeft = Offset(thumbOffset, 0f),
-                            size = Size(thumbWidth, size.height),
-                            cornerRadius = CornerRadius(10f)
-                        )
-                    }
-                }
-            }*/
         }
     }
 }
@@ -190,14 +152,8 @@ fun StepWithLine(
 //Crea los pasos de la barra de progreso para poder mostrar en pantalla
 @Composable
 fun Step(modifier: Modifier = Modifier, isComplete: Boolean, innerCircleColor: Color) {
-    //val color = if (isComplete || isCurrent) Color(0xFF55DFBE) else Color.LightGray
-    //val innerCircleColor = if (isComplete) Color(0xFFF5B800) else Color.LightGray
+
     Box(modifier = modifier) {
-        /*Divider(
-            modifier = Modifier.align(Alignment.CenterStart),
-            color = color,
-            thickness = 6.dp
-        )*/
         if(isComplete){
             StarCanvasSmooth(
                 modifier = modifier,
@@ -211,7 +167,6 @@ fun Step(modifier: Modifier = Modifier, isComplete: Boolean, innerCircleColor: C
                 borderColor = Color.LightGray
             )
         }
-
     }
 }
 

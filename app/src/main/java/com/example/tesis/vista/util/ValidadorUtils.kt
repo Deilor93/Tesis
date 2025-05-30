@@ -1,6 +1,5 @@
 package com.example.tesis.vista.util
 
-import kotlin.math.absoluteValue
 
 //Utilidades para validacion de datos
 class ValidadorUtils {
@@ -71,27 +70,4 @@ class ValidadorUtils {
         }
         return normalize(userInput) == normalize(correctAnswer)
     }
-
-    /**
-     * Valida si dos cadenas de texto son equivalentes considerando solo las palabras:
-     * - Ignora mayúsculas/minúsculas
-     * - Ignora signos de puntuación
-     * - Ignora espacios en blanco al inicio y final
-     */
-    fun isCorrectPlacement(userMap: Map<String, String>, correctMap: Map<String, String>, validatePosition: Boolean = false): Boolean {
-        return userMap.all { (id, value) ->
-            val correctValue = correctMap[id]
-            if (!validatePosition) {
-                value.split(":")[0] == correctValue?.split(":")?.get(0)
-            } else {
-                // Validate position with some tolerance
-                val userCoords = value.split(":").getOrNull(1)?.split("-")?.mapNotNull { it.toIntOrNull() }
-                val correctCoords = correctValue?.split(":")?.getOrNull(1)?.split("-")?.mapNotNull { it.toIntOrNull() }
-                userCoords != null && correctCoords != null &&
-                        (userCoords[0] - correctCoords[0]).absoluteValue <= 10 &&
-                        (userCoords[1] - correctCoords[1]).absoluteValue <= 10
-            }
-        }
-    }
-
 }

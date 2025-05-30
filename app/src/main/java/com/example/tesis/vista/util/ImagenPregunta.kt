@@ -1,11 +1,9 @@
 package com.example.tesis.vista.util
 
 import android.content.Context
-import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import com.example.tesis.R
 
 //Cargar imagen dinamicamente basado en el id de la pregunta
@@ -16,6 +14,7 @@ fun ImagenPregunta(
     idPregunta: Int,
 ) {
     val imageName = "p$idPregunta"
+    //Se utiliza getIdentifier para poder cargar dinamicamente la imagen a mostrar
     val imageResId = context.resources.getIdentifier(
         imageName,
         "drawable",

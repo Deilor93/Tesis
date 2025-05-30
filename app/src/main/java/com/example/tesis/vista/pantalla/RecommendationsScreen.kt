@@ -54,6 +54,10 @@ fun RecommendationsScreen(
         "Inteligencia Naturalista" to sharedViewModel.contNatu
     )
 
+    val potLing = sharedViewModel.potLing
+    val potMus = sharedViewModel.potMus
+    val potIntra = sharedViewModel.potIntra
+
     val clasificaciones = remember {
         mutableStateOf<List<Triple<String, Int, Clasificacion?>>>(emptyList())
     }
@@ -99,6 +103,55 @@ fun RecommendationsScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
+            //Escribe en pantalla si el niño tiene potencial de desarrollo de ciertas inteligencias en casa
+            if (potLing == 1) {
+                Text(
+                    buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = 40.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = Mogra,
+                            )
+                        ){
+                            append(text = "El estudiante tiene en casa herramientas para ayudar a potenciar su" +
+                                    " Inteligencia Lingüística")
+                        }
+                    }
+                )
+            }
+            if (potMus == 1) {
+                Text(
+                    buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = 40.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = Mogra,
+                            )
+                        ){
+                            append(text = "El estudiante tiene en casa herramientas para ayudar a potenciar su" +
+                                    " Inteligencia Musical")
+                        }
+                    }
+                )
+            }
+            if (potIntra == 1) {
+                Text(
+                    buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = 40.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = Mogra,
+                            )
+                        ){
+                            append(text = "El estudiante tiene en casa herramientas para ayudar a potenciar su" +
+                                    " Inteligencia Intrapersonal")
+                        }
+                    }
+                )
+            }
             //Escribe los resultados en pantalla
             resultados.value.forEach { item ->
                 Text(

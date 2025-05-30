@@ -1,5 +1,6 @@
 package com.example.tesis.vista.componente
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,7 +29,7 @@ fun AnimacionImagenPorNivel(
     var showGif by remember { mutableStateOf(false) }
 
     // Indice de la imagen actualmente mostrada
-    var displayedImageIndex by remember { mutableStateOf(0) }
+    var displayedImageIndex by remember { mutableIntStateOf(0) }
     //Selecciona aleatoriamente una de las tres posibles lineas de evolucion
     val imgSelector = Random.nextInt(3)
 
@@ -55,6 +56,8 @@ fun AnimacionImagenPorNivel(
         R.drawable.monstruo_1_3,
         R.drawable.monstruo_1_4,
         R.drawable.monstruo_1_5,
+        R.drawable.monstruo_1_6,
+        R.drawable.monstruo_1_7
     )
 
     val solyCaballero = listOf(
@@ -64,7 +67,9 @@ fun AnimacionImagenPorNivel(
         R.drawable.monstruo_2_2,
         R.drawable.monstruo_2_3,
         R.drawable.monstruo_2_4,
-        R.drawable.monstruo_2_5
+        R.drawable.monstruo_2_5,
+        R.drawable.monstruo_2_6,
+        R.drawable.monstruo_2_7
     )
 
     val solyPrincipe = listOf(
@@ -75,16 +80,20 @@ fun AnimacionImagenPorNivel(
         R.drawable.monstruo_3_3,
         R.drawable.monstruo_3_4,
         R.drawable.monstruo_3_5,
+        R.drawable.monstruo_3_6,
+        R.drawable.monstruo_3_7
 
     )
     val solyImages = remember {
         when (imgSelector) {
             0 -> solyPirata
             1 -> solyCaballero
-            3 -> solyPrincipe
+            2 -> solyPrincipe
             else -> listOf(R.drawable.monstruo)
         }
     }
+
+    Log.d("Soly", imgSelector.toString())
 
     //Selecciona la imagen basada en el indice
     val selectedImage = solyImages.getOrElse(displayedImageIndex % solyImages.size) {

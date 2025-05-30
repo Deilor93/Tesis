@@ -73,7 +73,7 @@ fun ImagenArrastrableSnapping(
                             val occupyingItem = allItems.firstOrNull {
                                 it != item && it.assignedCell?.index == cell.index
                             }
-                            /*Valid asi el objeto movido estaba dentro del grid o fuera del grid*/
+                            /*Valida si el objeto movido estaba dentro del grid o fuera del grid*/
                             val itemWasInGrid = item.assignedCell?.row in 0 until visibleGridSize &&
                                     item.assignedCell?.column in 0 until visibleGridSize
                             /*Valida si la celda objetivo esta dentro del grid o fuera del grid*/
@@ -100,7 +100,7 @@ fun ImagenArrastrableSnapping(
 
                                 // Case 3: El objeto regresa a la casilla vacia mas cercana
                                 else -> {
-                                    // No change in assignedCell
+
                                 }
                             }
 

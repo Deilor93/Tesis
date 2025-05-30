@@ -1,6 +1,8 @@
 package com.example.tesis.vista.pantalla
 
+import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -35,6 +37,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
@@ -56,6 +59,7 @@ import java.time.format.DateTimeFormatter
 import com.example.tesis.vista.componente.StepsProgressBar
 import com.example.tesis.vista.modelo.DraggableItem
 import com.example.tesis.vista.util.FormatUtil
+import com.example.tesis.vista.util.capturaPantalla
 import com.example.tesis.vista.viewmodel.SharedViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -117,14 +121,19 @@ fun TestScreen(
     val assignedStatus = sharedViewModel.assignedStatus
 
     val labelsP23 = sharedViewModel.p23
-    var mostrarResumenP23 by remember { mutableStateOf(false) }
-    val labelsP39 = sharedViewModel.p39
-    val labelsP40 = sharedViewModel.p40
-    val labelsP41 = sharedViewModel.p41
     val figurasP23 = sharedViewModel.figurasP23
+    val activity = context as? Activity
+    var screenshotBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var mostrarResumenP23 by remember { mutableStateOf(false) }
+
+    val labelsP39 = sharedViewModel.p39
     val figurasP39 = sharedViewModel.figurasP39
+
+    val labelsP40 = sharedViewModel.p40
     val animalesSombra = sharedViewModel.animalesSombra
     val sombras = sharedViewModel.sombras
+
+    val labelsP41 = sharedViewModel.p41
     val figurasP41 = sharedViewModel.figurasP41
 
     LaunchedEffect(animalesSombra) {
@@ -175,7 +184,6 @@ fun TestScreen(
             confirmButton = {
                 Button(onClick = {
                     mostrarAlerta = false
-                    // Acción de confirmación
                 }) {
                     Text("Aceptar")
                 }
@@ -206,7 +214,9 @@ fun TestScreen(
                         mostrarVerificacion = false
                         codigoIngresado = ""
                         codigoIncorrecto = false
+
                         mostrarResumenP23 = true
+
 
                     } else {
                         codigoIncorrecto = true
@@ -225,32 +235,35 @@ fun TestScreen(
 
     if (mostrarResumenP23) {
         AlertDialog(
-            onDismissRequest = { },
-            title = { Text("El estudiante construyo una figura completa, creativa y con " +
-                    "caracteristicas comunes utilizando al menos 5 figuras?") },
+            onDismissRequest = {mostrarResumenP23 = false},
+            title = { Text("El estudiante construyó una figura completa, creativa y " +
+                    "con caracteristicas comunes a su realidad utilizando 5 o mas figuras? ") },
             text = {
-                Box(modifier = Modifier.fillMaxWidth().height(300.dp)) {
-                    PreguntaClasificarConArrastre(
-                        context = context,
-                        idPregunta = 23,
-                        preguntaText = "Figura creada",
-                        items = sharedViewModel.resumenPregunta23Items,
-                        containerLabels = labelsP23,
-                        onAssignmentChanged = { }
-                    )
-                }
+                androidx.compose.foundation.Image(
+                    bitmap = screenshotBitmap!!.asImageBitmap(),
+                    contentDescription = "Screenshot",
+                    modifier = Modifier.fillMaxWidth().height(300.dp)
+                )
             },
             confirmButton = {
                 Button(onClick = {
-                    mostrarResumenP23 = false
+                    sharedViewModel.flagCor = true
                     navController.navigate("results")
                 }) {
-                    Text("Continuar")
+                    Text("Si")
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    sharedViewModel.flagCor = false
+                    navController.navigate("results")
+                    Log.d("flag", sharedViewModel.flagCor.toString())
+                }) {
+                    Text("No")
                 }
             }
         )
     }
-
 
     val isAnswerGiven by remember(
         tipoPregunta,
@@ -258,7 +271,7 @@ fun TestScreen(
         userPattern,
         userAnswers,
         assignedStatus,
-        isClassificationAnswerGiven // Add this!
+        isClassificationAnswerGiven
     ) {
         derivedStateOf {
             when (tipoPregunta) {
@@ -444,7 +457,7 @@ fun TestScreen(
                             }
                         }
                         5 -> {
-                            // Pregunta de mover objetos
+                            // Pregunta de claisificar objetos
                             when(idPregunta){
                                 23->{
                                     PreguntaClasificarConArrastre(
@@ -455,8 +468,6 @@ fun TestScreen(
                                         containerLabels = labelsP23,
                                         onAssignmentChanged = { assignments ->
                                             isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
-                                            sharedViewModel.resumenPregunta23Items = figurasP23.map { it.copy() }
-
                                             println("Assignments: $assignments")
                                             Log.d("currentitem", currentDragItems.toString())
                                         }
@@ -520,6 +531,19 @@ fun TestScreen(
                     modifier = Modifier.align(Alignment.CenterEnd),
                     onClick = {
                         localFocusManager.clearFocus()
+                        if(idPregunta == 23) {
+                            if (activity != null) {
+                                capturaPantalla(activity) { bitmap ->
+                                    bitmap?.let {
+                                        Log.d(
+                                            "Screenshot",
+                                            "Screenshot captured for question $idPregunta"
+                                        )
+                                        screenshotBitmap = it
+                                    }
+                                }
+                            }
+                        }
                         coroutineScope.launch {
                             withContext(Dispatchers.IO) {
                                 /**Valida el avance de las preguntas para mostrar el paso actual del

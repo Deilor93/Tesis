@@ -114,7 +114,7 @@ abstract class DbClass : RoomDatabase() {
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (13, 13, 'Cuantas peras quedan?');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (14, 14, 'Camino');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (15, 15, 'Amigos');")
-                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (16, 16, 'Numero a la izquierda del pulpo,Número en la isla con la niña,Número debajo de las espadas');")
+                            db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (16, 16, 'Numero a la izquierda del pulpo,Número en la isla con la niña y el tesoro,Número debajo de las espadas');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (17, 17, 'Bichos');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (18, 18, 'Puzzle');")
                             db.execSQL("INSERT INTO respuestas (id, preguntaId, respuesta) VALUES (19, 19, 'Si,No');")

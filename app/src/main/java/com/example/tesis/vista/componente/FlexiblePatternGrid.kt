@@ -71,7 +71,7 @@ fun FlexiblePatternGrid(
                 for (j in 0 until 6) {
                     val x = size.width * marginXFactor + j * spacingX
                     val y = size.height * marginYFactor + i * spacingY
-                    //Asicnacion de centro del punto
+                    //Asignacion de centro del punto
                     val center = Offset(x, y)
                     dotCenters.add(center)
                     //Dibuja los "puntos" seleccionables para el patron y pinta los puntos seleccionados

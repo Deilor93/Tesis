@@ -69,18 +69,6 @@ fun GraficaResultados(
         //Dibuja el relleno de la grafica
         drawPath(path = filledPath, color = Color(0xFF55DFBE).copy(alpha = 1f))
 
-        /* Dibuja puntos en los vertices del resultado
-        for (i in 0 until 8) {
-            val scoreFraction = (scores[i].toFloat() / maxScore).coerceAtLeast(0.05f)
-
-            val scaledRadius = radius * scoreFraction
-            val angle = i * angleStep - Math.PI / 2
-            //Agrega un punto en los vertices de cada puntuacion
-            val x = center.x + scaledRadius * cos(angle).toFloat()
-            val y = center.y + scaledRadius * sin(angle).toFloat()
-            drawCircle(Color.Red, radius = 6f, center = Offset(x, y))
-        }*/
-
         //Etiquetas de texto para cada inteligencia
         val textPaint = Paint().apply {
             color = android.graphics.Color.BLACK

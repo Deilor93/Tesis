@@ -36,8 +36,6 @@ fun PreguntaRespuestaAbierta(
     ) {
         AnimacionTexto(preguntaText)
 
-        //Spacer(modifier = Modifier.height(16.dp))
-
         Row (
             modifier = Modifier
                 .padding(start = 100.dp)

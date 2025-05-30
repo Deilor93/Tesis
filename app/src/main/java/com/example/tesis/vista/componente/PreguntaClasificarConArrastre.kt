@@ -45,7 +45,7 @@ fun PreguntaClasificarConArrastre(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp) // Enough height for both cells + items
+                .height(300.dp) //Aplicar suficiente altura para mostrar la/s celdas e items
         ) {
             val cellWidthPx = constraints.maxWidth.toFloat() / containerLabels.size
             val cellWidthDp = with(density) { cellWidthPx.toDp() }
@@ -65,7 +65,6 @@ fun PreguntaClasificarConArrastre(
                 }
             }
 
-            // Create cells
             containerLabels.forEachIndexed { index, label ->
 
                 Box(
@@ -93,7 +92,7 @@ fun PreguntaClasificarConArrastre(
                     contentAlignment = Alignment.Center
                 ) {
                     if (cellImages != null) {
-                        // Render image inside the cell
+                        //Pinta la imagen dentro de la celda si es aplicable
                         androidx.compose.foundation.Image(
                             painter = androidx.compose.ui.res.painterResource(id = cellImages[index].imageResId),
                             contentDescription = null,
@@ -102,7 +101,7 @@ fun PreguntaClasificarConArrastre(
                                 .padding(bottom = 4.dp)
                         )
                     } else {
-                        // Render label text
+                        //Muestra el texto de la etiqueta dentro de la celda si es aplicable
                         Text(
                             text = label,
                             modifier = Modifier.padding(bottom = 4.dp),
@@ -112,13 +111,13 @@ fun PreguntaClasificarConArrastre(
                 }
             }
 
-            // Initialize items below the cells with correct spacing
+            // Initializa los items arrastrables debajo de las celdas
             LaunchedEffect(Unit) {
-                val spacingX = 100f  // Centered per item
+                val spacingX = 100f //para espacear los items alineados
                 items.forEachIndexed { index, item ->
                     if (item.assignedCell == null) {
                         val posX = (spacingX * index) + spacingX / 2
-                        val posY = cellHeightPx + 50f  // 50px below cells
+                        val posY = cellHeightPx + 50f  // muestra los items xf pixeles debajo de la celda
                         item.assignedCell = GridCell(
                             index = -1,
                             row = -1,
@@ -129,7 +128,7 @@ fun PreguntaClasificarConArrastre(
                 }
             }
 
-            // Render draggable items on top
+            // Pinta los items dentro de la celda cuando ya son movidos
             items.forEach { item ->
                 ImagenArrastrable(
                     item = item,
@@ -147,5 +146,6 @@ fun PreguntaClasificarConArrastre(
                     }
                 )
             }
-        }}
+        }
+    }
 }

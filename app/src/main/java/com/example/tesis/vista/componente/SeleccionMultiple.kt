@@ -3,9 +3,7 @@ package com.example.tesis.vista.componente
 import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
@@ -39,8 +37,6 @@ fun SeleccionMultiple(
     ) {
         //Texto animado
         AnimacionTexto(questionText)
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         ImagenPregunta(
             context = context,

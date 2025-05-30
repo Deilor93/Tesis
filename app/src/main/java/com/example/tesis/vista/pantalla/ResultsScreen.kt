@@ -115,6 +115,10 @@ fun ResultsScreen(
                     pregunta?.respuestaCorrecta ?: ""
                 )
             }
+            if (sharedViewModel.flagCor) {
+                contCor += 1
+                sharedViewModel.flagCor = false
+            }
 
             if (isCorrect) {
                 when (pregunta?.categoriaId) {
@@ -135,7 +139,7 @@ fun ResultsScreen(
                     5 -> contCor += 1
                     6 -> contInter += 1
                     7 ->
-                        if(idPregunta == 2){
+                        if(idPregunta == 3){
                             potIntra += 1
                         }else{
                             contIntra += 1
@@ -146,7 +150,6 @@ fun ResultsScreen(
             Log.d("Validation", "Expected: ${pregunta?.respuestaCorrecta}")
             Log.d("Validation", "Given: ${resultado?.respuesta}")
             Log.d("isCorrect", isCorrect.toString())
-
 
             idPregunta = idPregunta?.plus(1)
             idResultado += 1
@@ -189,6 +192,9 @@ fun ResultsScreen(
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterEnd),
                     onClick = {
+                        sharedViewModel.potLing = potLing
+                        sharedViewModel.potMus = potMus
+                        sharedViewModel.potIntra = potIntra
                         sharedViewModel.contLing = contLing
                         sharedViewModel.contMat = contMat
                         sharedViewModel.contEsp = contEsp
@@ -211,5 +217,3 @@ fun ResultsScreen(
         }
     }
 }
-
-
