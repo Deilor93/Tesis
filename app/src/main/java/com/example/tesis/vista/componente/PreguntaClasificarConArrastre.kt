@@ -2,17 +2,13 @@ package com.example.tesis.vista.componente
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
@@ -20,11 +16,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
-import com.example.tesis.vista.componente.AnimacionTexto
-import com.example.tesis.vista.componente.ImagenArrastrableSnapping
 import com.example.tesis.vista.modelo.DraggableItem
 import com.example.tesis.vista.modelo.GridCell
-import com.example.tesis.vista.util.ImagenPregunta
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -34,6 +27,7 @@ fun PreguntaClasificarConArrastre(
     preguntaText: String,
     items: List<DraggableItem>,
     containerLabels: List<String>,
+    cellImages: List<DraggableItem>? = null,
     onAssignmentChanged: (List<String>) -> Unit
 ) {
     val gridCells = remember { mutableStateListOf<GridCell>() }
@@ -73,41 +67,50 @@ fun PreguntaClasificarConArrastre(
 
             // Create cells
             containerLabels.forEachIndexed { index, label ->
-                Column(
+
+                Box(
                     modifier = Modifier
                         .offset { IntOffset((cellWidthPx * index).toInt(), 0) }
-                        .width(cellWidthDp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = label,
-                        modifier = Modifier.padding(bottom = 4.dp),
-                        fontSize = 14.sp
-                    )
-                    Box(
-                        modifier = Modifier
-                            .height(cellHeightDp)
-                            .fillMaxWidth()
-                            .border(2.dp, Color.Black)
-                            .onGloballyPositioned { coordinates ->
-                                val pos = coordinates.positionInParent()
-                                val cell = GridCell(
-                                    index = index,
-                                    row = 0,
-                                    column = index,
-                                    position = pos,
-                                    label = label
-                                )
-                                if (gridCells.none { it.index == index }) {
-                                    gridCells.add(cell)
-                                } else {
-                                    gridCells[index] = cell
-                                }
+                        .width(cellWidthDp)
+                        .height(cellHeightDp)
+                        .border(2.dp, Color.Black)
+                        .onGloballyPositioned { coordinates ->
+                            val pos = coordinates.positionInParent()
+                            val size = coordinates.size
+                            val cell = GridCell(
+                                index = index,
+                                row = 0,
+                                column = index,
+                                position = pos,
+                                label = label
+                            )
+                            if (gridCells.none { it.index == index }) {
+                                gridCells.add(cell)
+                            } else {
+                                gridCells[index] = cell
                             }
-                    )
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (cellImages != null) {
+                        // Render image inside the cell
+                        androidx.compose.foundation.Image(
+                            painter = androidx.compose.ui.res.painterResource(id = cellImages[index].imageResId),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .height(80.dp)
+                                .padding(bottom = 4.dp)
+                        )
+                    } else {
+                        // Render label text
+                        Text(
+                            text = label,
+                            modifier = Modifier.padding(bottom = 4.dp),
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
-
 
             // Initialize items below the cells with correct spacing
             LaunchedEffect(Unit) {

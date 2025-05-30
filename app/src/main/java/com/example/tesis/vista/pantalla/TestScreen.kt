@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -26,7 +27,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -80,6 +80,10 @@ fun TestScreen(
     var tipoPregunta by remember { mutableIntStateOf(0) }
     val cantidadPreguntas = preguntaDao.getCantidadPreguntas()
 
+    var mostrarVerificacion by remember { mutableStateOf(false) }
+    var codigoIngresado by remember { mutableStateOf("") }
+    var codigoIncorrecto by remember { mutableStateOf(false) }
+
     var respuesta by remember {mutableStateOf("")}
 
     val coroutineScope = rememberCoroutineScope()
@@ -99,15 +103,12 @@ fun TestScreen(
 
     var userDragMatchResult by remember { mutableStateOf("") }
 
-    val answersMap = remember { mutableStateMapOf<String, String>() }
     var isClassificationAnswerGiven by remember { mutableStateOf(false) }
-
 
     val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
     val current = LocalDateTime.now().format(formatter)
 
     var mostrarAlerta by remember { mutableStateOf(false) }
-
 
     val amigosSoly = sharedViewModel.amigosSoly
     val bichos = sharedViewModel.bichos
@@ -116,20 +117,16 @@ fun TestScreen(
     val assignedStatus = sharedViewModel.assignedStatus
 
     val labelsP23 = sharedViewModel.p23
+    var mostrarResumenP23 by remember { mutableStateOf(false) }
     val labelsP39 = sharedViewModel.p39
     val labelsP40 = sharedViewModel.p40
     val labelsP41 = sharedViewModel.p41
     val figurasP23 = sharedViewModel.figurasP23
     val figurasP39 = sharedViewModel.figurasP39
     val animalesSombra = sharedViewModel.animalesSombra
+    val sombras = sharedViewModel.sombras
     val figurasP41 = sharedViewModel.figurasP41
 
-
-    LaunchedEffect(isClassificationAnswerGiven) {
-        if (tipoPregunta == 1) {
-            currentDragItems = animalesSombra // Adjust for your question (or sharedViewModel source)
-        }
-    }
     LaunchedEffect(animalesSombra) {
         snapshotFlow {
             animalesSombra.map { it.assignedCell }
@@ -140,9 +137,6 @@ fun TestScreen(
             Log.d("PositionChange", "Item positions: $positionsLog")
         }
     }
-
-
-
     //Actualizar dinamicamente variables cambiantes
     LaunchedEffect(idPregunta, idRespuesta) {
         val pregunta = preguntaDao.getPreguntaById(idPregunta)
@@ -189,6 +183,75 @@ fun TestScreen(
         )
     }
 
+    if (mostrarVerificacion) {
+        AlertDialog(
+            onDismissRequest = { mostrarVerificacion = false },
+            title = { Text("Verificación de Código") },
+            text = {
+                Column {
+                    Text("Ingrese el código del estudiante para continuar:")
+                    androidx.compose.material.OutlinedTextField(
+                        value = codigoIngresado,
+                        onValueChange = { codigoIngresado = it },
+                        label = { Text("Código de estudiante") }
+                    )
+                    if (codigoIncorrecto) {
+                        Text("El código ingresado no es correcto, intente nuevamente", color = Color.Red)
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    if (codigoIngresado == sharedViewModel.estudiante?.codigo) {
+                        mostrarVerificacion = false
+                        codigoIngresado = ""
+                        codigoIncorrecto = false
+                        mostrarResumenP23 = true
+
+                    } else {
+                        codigoIncorrecto = true
+                    }
+                }) {
+                    Text("Continuar")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { mostrarVerificacion = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    if (mostrarResumenP23) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text("El estudiante construyo una figura completa, creativa y con " +
+                    "caracteristicas comunes utilizando al menos 5 figuras?") },
+            text = {
+                Box(modifier = Modifier.fillMaxWidth().height(300.dp)) {
+                    PreguntaClasificarConArrastre(
+                        context = context,
+                        idPregunta = 23,
+                        preguntaText = "Figura creada",
+                        items = sharedViewModel.resumenPregunta23Items,
+                        containerLabels = labelsP23,
+                        onAssignmentChanged = { }
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    mostrarResumenP23 = false
+                    navController.navigate("results")
+                }) {
+                    Text("Continuar")
+                }
+            }
+        )
+    }
+
+
     val isAnswerGiven by remember(
         tipoPregunta,
         selectedOption,
@@ -208,7 +271,6 @@ fun TestScreen(
             }
         }
     }
-
 
     LaunchedEffect(isAnswerGiven) {
         Log.d("Validation", "isAnswerGiven = $isAnswerGiven")
@@ -393,6 +455,8 @@ fun TestScreen(
                                         containerLabels = labelsP23,
                                         onAssignmentChanged = { assignments ->
                                             isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
+                                            sharedViewModel.resumenPregunta23Items = figurasP23.map { it.copy() }
+
                                             println("Assignments: $assignments")
                                             Log.d("currentitem", currentDragItems.toString())
                                         }
@@ -402,8 +466,8 @@ fun TestScreen(
                                 39->{
                                     PreguntaClasificarConArrastre(
                                         context = context,
-                                        idPregunta = 1,
-                                        preguntaText = "Ubica los objetos en su lugar correspondiente",
+                                        idPregunta = idPregunta,
+                                        preguntaText = preguntaText,
                                         items = figurasP39,
                                         containerLabels = labelsP39,
                                         onAssignmentChanged = { assignments ->
@@ -417,10 +481,11 @@ fun TestScreen(
                                 40->{
                                     PreguntaClasificarConArrastre(
                                         context = context,
-                                        idPregunta = 1,
-                                        preguntaText = "Ubica los objetos en su lugar correspondiente",
+                                        idPregunta = idPregunta,
+                                        preguntaText = preguntaText,
                                         items = animalesSombra,
                                         containerLabels = labelsP40,
+                                        cellImages = sombras,
                                         onAssignmentChanged = { assignments ->
                                             isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
                                             println("Assignments: $assignments")
@@ -432,8 +497,8 @@ fun TestScreen(
                                 41->{
                                     PreguntaClasificarConArrastre(
                                         context = context,
-                                        idPregunta = 1,
-                                        preguntaText = "Ubica los objetos en su lugar correspondiente",
+                                        idPregunta = idPregunta,
+                                        preguntaText = preguntaText,
                                         items = figurasP41,
                                         containerLabels = labelsP41,
                                         onAssignmentChanged = { assignments ->
@@ -442,7 +507,7 @@ fun TestScreen(
                                             Log.d("currentitem", currentDragItems.toString())
                                         }
                                     )
-                                    currentDragItems = animalesSombra
+                                    currentDragItems = figurasP41
                                 }
                             }
                         }
@@ -470,9 +535,7 @@ fun TestScreen(
                                     } else {
                                         mostrarAlerta = true
                                     }
-                                }
-
-                                else if (currentStep < cantidadPreguntas) {
+                                } else if (currentStep < cantidadPreguntas) {
                                     if (isAnswerGiven) {
                                         currentStep = currentStep + 1
                                         saveRespuesta(idPregunta)
@@ -481,8 +544,8 @@ fun TestScreen(
                                     }
                                 } else if (currentStep == cantidadPreguntas) {
                                     withContext(Dispatchers.Main) {
-                                        Log.d("res", sharedViewModel.resultado.toString())
-                                        navController.navigate("results")
+                                        mostrarVerificacion = true
+
                                     }
                                 }
                             }

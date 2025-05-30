@@ -78,7 +78,9 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
         Box(modifier = Modifier.fillMaxHeight().weight(0.1f)){
             IconButton(
                 onClick = {
-                    navController.navigate("test")
+                    navController.navigate("test") {
+                        popUpTo("intro") { inclusive = true }
+                    }
                 },
                 modifier = Modifier
                     .align(Alignment.CenterEnd)

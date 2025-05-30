@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -43,12 +44,15 @@ fun AppNavigation(context: Context, viewModelStoreOwner: MainScreen) {
             WelcomeScreen(navController = navController, sharedViewModel)
         }
         composable("test"){
+            BackHandler(enabled = true) { }
             TestScreen(navController = navController, context = context, sharedViewModel)
         }
         composable("results"){
+            BackHandler(enabled = true) { }
             ResultsScreen(navController = navController, context = context, sharedViewModel)
         }
         composable("recommendations"){
+            BackHandler(enabled = true) { }
             RecommendationsScreen(navController = navController, context = context, sharedViewModel)
         }
     }

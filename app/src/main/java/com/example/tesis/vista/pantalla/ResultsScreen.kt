@@ -97,6 +97,19 @@ fun ResultsScreen(
                             pregunta?.respuestaCorrecta ?: ""
                         )
                     }
+                5 ->
+                    if(idPregunta == 40){
+                        validador.isMinimoItemsCorrectos(
+                            resultado?.respuesta ?: "",
+                            pregunta?.respuestaCorrecta ?: "",
+                            4
+                        )
+                    } else{
+                        validador.isArrastrarYUbicarCorrecto(
+                            resultado?.respuesta ?: "",
+                            pregunta?.respuestaCorrecta ?: ""
+                        )
+                    }
                 else -> validador.compararSoloTexto(
                     resultado?.respuesta ?: "",
                     pregunta?.respuestaCorrecta ?: ""
@@ -132,10 +145,8 @@ fun ResultsScreen(
             }
             Log.d("Validation", "Expected: ${pregunta?.respuestaCorrecta}")
             Log.d("Validation", "Given: ${resultado?.respuesta}")
-            if(pregunta?.tipoPregunta==4){
-                Log.d("isCorrect", isCorrect.toString())
-            }
-            Log.d("contEsp", contEsp.toString())
+            Log.d("isCorrect", isCorrect.toString())
+
 
             idPregunta = idPregunta?.plus(1)
             idResultado += 1

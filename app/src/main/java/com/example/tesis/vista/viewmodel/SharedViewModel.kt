@@ -107,8 +107,10 @@ class SharedViewModel : ViewModel() {
         DraggableItem("L", R.drawable.triangulo, correctLabel = "Triangulo")
     )
 
+    var resumenPregunta23Items by mutableStateOf<List<DraggableItem>>(emptyList())
+
     val p39: List<String> = listOf(
-        "Animales de Granja",
+        "Animales de granja",
         "Dinosaurios"
     )
 
