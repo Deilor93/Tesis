@@ -119,6 +119,10 @@ fun ResultsScreen(
                 contCor += 1
                 sharedViewModel.flagCor = false
             }
+            if (sharedViewModel.flagIntra) {
+                contIntra += 1
+                sharedViewModel.flagIntra = false
+            }
 
             if (isCorrect) {
                 when (pregunta?.categoriaId) {
@@ -155,8 +159,6 @@ fun ResultsScreen(
             idResultado += 1
         }
     }
-
-
 
     Surface(
         modifier = Modifier

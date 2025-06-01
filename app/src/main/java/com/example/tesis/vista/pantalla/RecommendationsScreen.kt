@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.tesis.logica.Clasificacion
 import com.example.tesis.logica.DbClass
+import com.example.tesis.vista.componente.StarRating
 import com.example.tesis.vista.modelo.ClasificacionConRecomendacion
 import com.example.tesis.vista.util.Mogra
 import com.example.tesis.vista.viewmodel.SharedViewModel
@@ -54,21 +56,39 @@ fun RecommendationsScreen(
         "Inteligencia Naturalista" to sharedViewModel.contNatu
     )
 
+    val emojiMapInteligencia = mapOf(
+        "Inteligencia Lingüística" to "📚",
+        "Inteligencia Lógico-Matemática" to "🧠",
+        "Inteligencia Espacial" to "📐",
+        "Inteligencia Musical" to "🎸",
+        "Inteligencia Corporal-Cinestésica" to "🏃",
+        "Inteligencia Interpersonal" to "🫂",
+        "Inteligencia Intrapersonal" to "🧘",
+        "Inteligencia Naturalista" to "🌿"
+    )
+
+    val colorMapInteligencia = mapOf(
+        "Inteligencia Lingüística" to Color(0xFF475CD7),       // Azul
+        "Inteligencia Lógico-Matemática" to Color(0xFF7E8A7E), // Gris
+        "Inteligencia Espacial" to Color(0xFFCE964B),          // Naranja
+        "Inteligencia Musical" to Color(0xFFBA33D2),           // Morado
+        "Inteligencia Corporal-Cinestésica" to Color(0xFFFA5F5F), // Rojo
+        "Inteligencia Interpersonal" to Color(0xFF58EEDE),     // Aguamarina
+        "Inteligencia Intrapersonal" to Color(0xFFBB8C7A),     // Cafe
+        "Inteligencia Naturalista" to Color(0xFF99D552)        // Verde
+    )
+
     val potLing = sharedViewModel.potLing
     val potMus = sharedViewModel.potMus
     val potIntra = sharedViewModel.potIntra
 
-    val clasificaciones = remember {
-        mutableStateOf<List<Triple<String, Int, Clasificacion?>>>(emptyList())
-    }
     val resultados = remember {
         mutableStateOf<List<ClasificacionConRecomendacion>>(emptyList())
     }
 
-    Log.d("clasif", clasificaciones.toString())
 
     //Calculo para asignacion de categoria dependiendo de la cantidad de respuestas correctas
-    fun calcCat(puntuacion: Int): Int = when {
+    fun calcClas(puntuacion: Int): Int = when {
         puntuacion <= 2 -> 1
         puntuacion == 3 -> 2
         else -> 3
@@ -79,8 +99,20 @@ fun RecommendationsScreen(
      * va a mostrar en pantalla*/
     LaunchedEffect(Unit) {
         val result = intelligencias.map { (nombreInteligencia, puntuacion) ->
-            val catId = calcCat(puntuacion)
-            val clasificacion = clasificacionDao.getClasificacionById(catId)
+            val clasId = calcClas(puntuacion)
+            val clasificacion = clasificacionDao.getClasificacionById(clasId)
+            val catId = when (nombreInteligencia) {
+                "Inteligencia Lingüística" -> 1
+                "Inteligencia Lógico-Matemática" -> 2
+                "Inteligencia Espacial" -> 3
+                "Inteligencia Musical" -> 4
+                "Inteligencia Corporal-Cinestésica" -> 5
+                "Inteligencia Interpersonal" -> 6
+                "Inteligencia Intrapersonal" -> 7
+                "Inteligencia Naturalista" -> 8
+                else -> 0 // default or error case, depending on your design
+            }
+            Log.d("catId", catId.toString())
             val recomendacion = clasificacion?.let {
                 recomendacionDao.getRecomendacionByClasificacionYCategoria(
                     clasificacionId = it.id,
@@ -89,9 +121,11 @@ fun RecommendationsScreen(
             }
             //Data class con la informacion que se va a mostrar en pantalla
             ClasificacionConRecomendacion(nombreInteligencia, puntuacion, clasificacion, recomendacion)
+
         }
         resultados.value = result
     }
+    //Log.d("Results", resultados.toString())
 
     Surface(
         modifier = Modifier
@@ -104,94 +138,118 @@ fun RecommendationsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             //Escribe en pantalla si el niño tiene potencial de desarrollo de ciertas inteligencias en casa
-            if (potLing == 1) {
+            if (potLing == 1 || potMus == 1 || potIntra == 1) {
                 Text(
                     buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
                                 fontSize = 40.sp,
-                                fontWeight = FontWeight.Bold,
                                 fontFamily = Mogra,
+                                color = Color(0xFF646262)
                             )
                         ){
-                            append(text = "El estudiante tiene en casa herramientas para ayudar a potenciar su" +
-                                    " Inteligencia Lingüística")
+                            append(text = "El estudiante tiene en casa herramientas para ayudar " +
+                                    "a potenciar las siguientes inteligencias")
                         }
-                    }
+                    },
+                    modifier = Modifier.padding(bottom = 25.dp)
                 )
+                if (potLing == 1){
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(
+                                style = ParagraphStyle(
+                                    textIndent = TextIndent(firstLine = 35.sp)
+                                )
+                            ){
+                                append(text = "•Inteligencia Lingüística")
+                            }
+                        },
+                        modifier = Modifier.padding(bottom = 25.dp),
+                        color = Color(0xFF475CD7),
+                        style = TextStyle(fontSize = 20.sp),
+                        fontFamily = Mogra
+                    )
+                }
+                if (potMus == 1){
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(
+                                style = ParagraphStyle(
+                                    textIndent = TextIndent(firstLine = 35.sp)
+                                )
+                            ){
+                                append(text = "•Inteligencia Musical")
+                            }
+                        },
+                        modifier = Modifier.padding(bottom = 25.dp),
+                        color = Color(0xFFBA33D2),
+                        style = TextStyle(fontSize = 20.sp),
+                        fontFamily = Mogra
+                    )
+                }
+                if (potIntra == 1){
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(
+                                style = ParagraphStyle(
+                                    textIndent = TextIndent(firstLine = 35.sp)
+                                )
+                            ){
+                                append(text = "•Inteligencia Intrapersonal")
+                            }
+                        },
+                        modifier = Modifier.padding(bottom = 25.dp),
+                        color = Color(0xFFBB8C7A),
+                        style = TextStyle(fontSize = 20.sp),
+                        fontFamily = Mogra
+                    )
+                }
             }
-            if (potMus == 1) {
-                Text(
-                    buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = 40.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = Mogra,
-                            )
-                        ){
-                            append(text = "El estudiante tiene en casa herramientas para ayudar a potenciar su" +
-                                    " Inteligencia Musical")
-                        }
-                    }
-                )
-            }
-            if (potIntra == 1) {
-                Text(
-                    buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = 40.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = Mogra,
-                            )
-                        ){
-                            append(text = "El estudiante tiene en casa herramientas para ayudar a potenciar su" +
-                                    " Inteligencia Intrapersonal")
-                        }
-                    }
-                )
-            }
+
+            HorizontalDivider(thickness = 4.dp)
+
             //Escribe los resultados en pantalla
             resultados.value.forEach { item ->
-                Text(
-                    buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = 40.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = Mogra,
-                            )
-                        ){
-                            append(text = "• ${item.nombre}: \n")
-                        }
-                        withStyle(
-                            style = ParagraphStyle(
-                                textIndent = TextIndent(firstLine = 35.sp)
-                            )
-                        ) {
-                            append(text = "Puntaje ${item.puntuacion} → ${item.clasificacion?.nombre ?: "Cargando..."}")
-                        }
-                    },
-                    modifier = Modifier.padding(vertical = 15.dp),
-                    fontSize = 30.sp,
-                    fontFamily = Mogra
-                )
-                Text(
-                    buildAnnotatedString {
-                        withStyle(
-                            style = ParagraphStyle(
-                                textIndent = TextIndent(firstLine = 35.sp)
-                            )
-                        ) {
-                            append(item.recomendacion?.recomendacion ?: "Recomendación no disponible")
-                        }
-                    },
-                    style = TextStyle(fontSize = 20.sp),
-                    modifier = Modifier.padding(bottom = 25.dp),
-                    fontFamily = Mogra
+                val color = colorMapInteligencia[item.nombre] ?: Color.Black
+                Column(modifier = Modifier.padding(vertical = 15.dp)) {
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontSize = 40.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = Mogra,
+                                    color = color
+                                )
+                            ){
+                                val emoji = emojiMapInteligencia[item.nombre] ?: ""
+                                append(text = "• ${item.nombre} $emoji:")
+                            }
+                        },
+                        fontSize = 30.sp,
+                        fontFamily = Mogra
+                    )
 
-                )
+                    StarRating(rating = item.puntuacion)
+
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(
+                                style = ParagraphStyle(
+                                    textIndent = TextIndent(firstLine = 35.sp)
+                                )
+                            ) {
+                                append(item.recomendacion?.recomendacion ?: "Recomendación no disponible")
+                            }
+                        },
+                        modifier = Modifier.padding(bottom = 25.dp),
+                        style = TextStyle(fontSize = 20.sp),
+                        fontFamily = Mogra,
+                        color = color
+                    )
+                }
+                HorizontalDivider(thickness = 2.dp)
             }
         }
     }

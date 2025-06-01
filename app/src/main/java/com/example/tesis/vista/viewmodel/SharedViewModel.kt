@@ -18,6 +18,7 @@ class SharedViewModel : ViewModel() {
     var resultado: Resultado? by mutableStateOf(null)
 
     var flagCor by mutableStateOf(false)
+    var flagIntra by mutableStateOf(false)
 
     var potLing: Int = 0
     var potMus: Int = 0

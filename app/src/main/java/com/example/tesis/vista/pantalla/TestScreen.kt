@@ -123,8 +123,11 @@ fun TestScreen(
     val labelsP23 = sharedViewModel.p23
     val figurasP23 = sharedViewModel.figurasP23
     val activity = context as? Activity
-    var screenshotBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var screenshotBitmapP23 by remember { mutableStateOf<Bitmap?>(null) }
     var mostrarResumenP23 by remember { mutableStateOf(false) }
+
+    var screenshotBitmapP29 by remember { mutableStateOf<Bitmap?>(null) }
+    var mostrarResumenP29 by remember { mutableStateOf(false) }
 
     val labelsP39 = sharedViewModel.p39
     val figurasP39 = sharedViewModel.figurasP39
@@ -197,7 +200,7 @@ fun TestScreen(
             title = { Text("Verificación de Código") },
             text = {
                 Column {
-                    Text("Ingrese el código del estudiante para continuar:")
+                    Text("Ingrese el código de seguridad para continuar:")
                     androidx.compose.material.OutlinedTextField(
                         value = codigoIngresado,
                         onValueChange = { codigoIngresado = it },
@@ -240,15 +243,15 @@ fun TestScreen(
                     "con caracteristicas comunes a su realidad utilizando 5 o mas figuras? ") },
             text = {
                 androidx.compose.foundation.Image(
-                    bitmap = screenshotBitmap!!.asImageBitmap(),
-                    contentDescription = "Screenshot",
+                    bitmap = screenshotBitmapP23!!.asImageBitmap(),
+                    contentDescription = "Captura",
                     modifier = Modifier.fillMaxWidth().height(300.dp)
                 )
             },
             confirmButton = {
                 Button(onClick = {
                     sharedViewModel.flagCor = true
-                    navController.navigate("results")
+                    mostrarResumenP29 = true
                 }) {
                     Text("Si")
                 }
@@ -256,8 +259,40 @@ fun TestScreen(
             dismissButton = {
                 Button(onClick = {
                     sharedViewModel.flagCor = false
-                    navController.navigate("results")
+                    mostrarResumenP29 = true
                     Log.d("flag", sharedViewModel.flagCor.toString())
+                }) {
+                    Text("No")
+                }
+            }
+        )
+    }
+
+    if (mostrarResumenP29) {
+        AlertDialog(
+            onDismissRequest = {mostrarResumenP29 = false},
+            title = { Text("El estudiante pudo identificar correctamente las emociones de " +
+                    "las caras mostradas en pantalla?") },
+            text = {
+                androidx.compose.foundation.Image(
+                    bitmap = screenshotBitmapP29!!.asImageBitmap(),
+                    contentDescription = "Captura",
+                    modifier = Modifier.fillMaxWidth().height(300.dp)
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    sharedViewModel.flagIntra = true
+                    navController.navigate("results")
+                }) {
+                    Text("Si")
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    sharedViewModel.flagIntra = false
+                    navController.navigate("results")
+                    Log.d("flag", sharedViewModel.flagIntra.toString())
                 }) {
                     Text("No")
                 }
@@ -467,7 +502,7 @@ fun TestScreen(
                                         items = figurasP23,
                                         containerLabels = labelsP23,
                                         onAssignmentChanged = { assignments ->
-                                            isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
+                                            isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
                                             println("Assignments: $assignments")
                                             Log.d("currentitem", currentDragItems.toString())
                                         }
@@ -482,7 +517,7 @@ fun TestScreen(
                                         items = figurasP39,
                                         containerLabels = labelsP39,
                                         onAssignmentChanged = { assignments ->
-                                            isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
+                                            isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
                                             println("Assignments: $assignments")
                                             Log.d("currentitem", currentDragItems.toString())
                                         }
@@ -498,7 +533,7 @@ fun TestScreen(
                                         containerLabels = labelsP40,
                                         cellImages = sombras,
                                         onAssignmentChanged = { assignments ->
-                                            isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
+                                            isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
                                             println("Assignments: $assignments")
                                             Log.d("currentitem", currentDragItems.toString())
                                         }
@@ -513,7 +548,7 @@ fun TestScreen(
                                         items = figurasP41,
                                         containerLabels = labelsP41,
                                         onAssignmentChanged = { assignments ->
-                                            isClassificationAnswerGiven = assignments.any { it.contains(":") && !it.endsWith("Ninguno") }
+                                            isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
                                             println("Assignments: $assignments")
                                             Log.d("currentitem", currentDragItems.toString())
                                         }
@@ -539,7 +574,20 @@ fun TestScreen(
                                             "Screenshot",
                                             "Screenshot captured for question $idPregunta"
                                         )
-                                        screenshotBitmap = it
+                                        screenshotBitmapP23 = it
+                                    }
+                                }
+                            }
+                        }
+                        if(idPregunta == 29) {
+                            if (activity != null) {
+                                capturaPantalla(activity) { bitmap ->
+                                    bitmap?.let {
+                                        Log.d(
+                                            "Screenshot",
+                                            "Screenshot captured for question $idPregunta"
+                                        )
+                                        screenshotBitmapP29 = it
                                     }
                                 }
                             }
@@ -556,6 +604,7 @@ fun TestScreen(
                                         currentStep++
                                         idPregunta++
                                         idRespuesta++
+                                        isClassificationAnswerGiven = false
                                     } else {
                                         mostrarAlerta = true
                                     }

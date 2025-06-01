@@ -52,7 +52,7 @@ fun AppNavigation(context: Context, viewModelStoreOwner: MainScreen) {
             ResultsScreen(navController = navController, context = context, sharedViewModel)
         }
         composable("recommendations"){
-            BackHandler(enabled = true) { }
+            //BackHandler(enabled = true) { }
             RecommendationsScreen(navController = navController, context = context, sharedViewModel)
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.cos
 import kotlin.math.sin
@@ -28,7 +29,7 @@ fun StepsProgressBar(
     currentStep: Int
 ) {
     val scrollState = rememberScrollState()
-    val stepWidth = 50.dp
+    val stepWidth = 140.dp
     val density = LocalDensity.current
     val stepWidthPx = with(density) { stepWidth.toPx() }
 
@@ -165,6 +166,26 @@ fun Step(modifier: Modifier = Modifier, isComplete: Boolean, innerCircleColor: C
                 modifier = modifier,
                 fillColor = Color.LightGray,
                 borderColor = Color.LightGray
+            )
+        }
+    }
+}
+
+@Composable
+fun StarRating(
+    rating: Int, // Number of filled stars (from 0 to 5)
+    modifier: Modifier = Modifier,
+    starColor: Color = Color(0xFFF5B800),
+    emptyStarColor: Color = Color.LightGray,
+    starSize: Dp = 40.dp
+) {
+    Row(modifier = modifier) {
+        for (i in 1..5) {
+            val color = if (i <= rating) starColor else emptyStarColor
+            StarCanvasSmooth(
+                modifier = Modifier.size(starSize).padding(end = 4.dp),
+                fillColor = color,
+                borderColor = color
             )
         }
     }

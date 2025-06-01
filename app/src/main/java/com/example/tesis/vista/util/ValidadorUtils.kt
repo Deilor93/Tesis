@@ -1,5 +1,7 @@
 package com.example.tesis.vista.util
 
+import java.text.Normalizer
+
 
 //Utilidades para validacion de datos
 class ValidadorUtils {
@@ -62,11 +64,12 @@ class ValidadorUtils {
      */
     fun compararSoloTexto(userInput: String, correctAnswer: String): Boolean {
         fun normalize(text: String): String {
-            return text
+            return Normalizer.normalize(text, Normalizer.Form.NFD)
                 .trim()
                 .lowercase()
-                .replace(Regex("[\\p{Punct}]"), "") // Elimina puntuación
-                .replace("\\s+".toRegex(), " ") // Normaliza espacios múltiples
+                .replace(Regex("\\p{M}"), "")// Elimina accentos de las vocales
+                .replace(Regex("[\\p{Punct}]"), "") // Elimina puntuación de las palabras
+                .replace("\\s+".toRegex(), " ")
         }
         return normalize(userInput) == normalize(correctAnswer)
     }
