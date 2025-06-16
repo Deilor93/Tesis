@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,8 +32,7 @@ fun SeleccionMultiple(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         //Texto animado
@@ -43,7 +43,6 @@ fun SeleccionMultiple(
             idPregunta = idPregunta,
             modifier = Modifier
                 .size(300.dp)
-                .padding(vertical = 16.dp)
         )
 
 
@@ -70,7 +69,8 @@ fun SeleccionMultiple(
                     Text(
                         text = text,
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF085A5D)
                     )
                 }
             }

@@ -1,9 +1,11 @@
 package com.example.tesis.vista.componente
 
+import android.R
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import com.example.tesis.vista.modelo.DraggableItem
@@ -44,8 +47,9 @@ fun PreguntaClasificarConArrastre(
 
         BoxWithConstraints(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp) //Aplicar suficiente altura para mostrar la/s celdas e items
+                .fillMaxWidth(0.5f)//Establece el tamaño de la caja a la mitad de el ancho maximo
+                .height(300.dp)//Aplicar suficiente altura para mostrar la/s celdas e items
+                .padding(start = 100.dp)
         ) {
             val cellWidthPx = constraints.maxWidth.toFloat() / containerLabels.size
             val cellWidthDp = with(density) { cellWidthPx.toDp() }
@@ -72,7 +76,11 @@ fun PreguntaClasificarConArrastre(
                         .offset { IntOffset((cellWidthPx * index).toInt(), 0) }
                         .width(cellWidthDp)
                         .height(cellHeightDp)
-                        .border(2.dp, Color.Black)
+                        .border(
+                            5.dp,
+                            color= Color(0xFF085A5D),
+                            shape = RoundedCornerShape(12.dp)
+                        )
                         .onGloballyPositioned { coordinates ->
                             val pos = coordinates.positionInParent()
                             val size = coordinates.size
@@ -104,8 +112,9 @@ fun PreguntaClasificarConArrastre(
                         //Muestra el texto de la etiqueta dentro de la celda si es aplicable
                         Text(
                             text = label,
-                            modifier = Modifier.padding(bottom = 4.dp),
-                            fontSize = 14.sp
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            color = Color(0xFF085A5D)
                         )
                     }
                 }

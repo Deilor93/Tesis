@@ -55,7 +55,7 @@ fun FlexiblePatternGrid(
             },
         contentAlignment = Alignment.Center
     ) {
-        Canvas(modifier = Modifier.fillMaxHeight().fillMaxWidth(0.5f)) {
+        Canvas(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
             dotCenters.clear()
             /**rows es 7 columnas es 6, se fijó el valor por el requerimiento de la pregunta pero el
              *  codigo sigue siendo dinamico

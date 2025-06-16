@@ -35,8 +35,6 @@ fun PreguntaArrastrarYUbicar(
     ) {
         AnimacionTexto(preguntaText)
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         val cellSizeDp = 75.dp
         val cellSizePx = with(LocalDensity.current) { cellSizeDp.toPx() }
 
@@ -67,20 +65,21 @@ fun PreguntaArrastrarYUbicar(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            modifier = Modifier.fillMaxWidth()
         ) {
             ImagenPregunta(
                 context = context,
                 idPregunta = idPregunta,
                 modifier = Modifier
                     .size(300.dp)
-                    .padding(vertical = 16.dp)
+                    .padding(start = 180.dp)
+                    .weight(1f)
             )
 
             Box(
                 modifier = Modifier
                     .size((gridSize * cellSizePx).dp)
+                    .offset(-55.dp)
             ) {
                 //Dibuja el grid creado sobre la pantalla
                 Canvas(modifier = Modifier.fillMaxSize()) {

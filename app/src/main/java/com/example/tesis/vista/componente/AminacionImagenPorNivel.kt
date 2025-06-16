@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -99,6 +100,12 @@ fun AnimacionImagenPorNivel(
     val selectedImage = solyImages.getOrElse(displayedImageIndex % solyImages.size) {
         R.drawable.monstruo
     }
+
+    Image(
+        modifier = Modifier.size(50.dp).offset(x = 200.dp, y = 120.dp),
+        painter = painterResource(R.drawable.bubble),
+        contentDescription = "bubble"
+    )
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         // Muestra el GIF sobre la imagen cuando se activa

@@ -86,10 +86,10 @@ fun WelcomeScreen(navController: NavController, sharedViewModel: SharedViewModel
                     .align(Alignment.CenterEnd)
             ) {
                 Icon(
+                    modifier = Modifier.size(70.dp),
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Siguiente",
-                    tint = Color.Black,
-                    modifier = Modifier.size(48.dp)
+                    tint = Color(0xFF085A5D)
                 )
             }
         }

@@ -159,7 +159,7 @@ fun Step(modifier: Modifier = Modifier, isComplete: Boolean, innerCircleColor: C
             StarCanvasSmooth(
                 modifier = modifier,
                 fillColor = innerCircleColor,
-                borderColor = innerCircleColor
+                borderColor = Color(0xFFC29102)
             )
         } else{
             StarCanvasSmooth(
@@ -173,7 +173,7 @@ fun Step(modifier: Modifier = Modifier, isComplete: Boolean, innerCircleColor: C
 
 @Composable
 fun StarRating(
-    rating: Int, // Number of filled stars (from 0 to 5)
+    rating: Int, // Numero de estrellas llenas (de 0 a 5)
     modifier: Modifier = Modifier,
     starColor: Color = Color(0xFFF5B800),
     emptyStarColor: Color = Color.LightGray,
@@ -182,10 +182,11 @@ fun StarRating(
     Row(modifier = modifier) {
         for (i in 1..5) {
             val color = if (i <= rating) starColor else emptyStarColor
+            val borderColor = if (i <= rating) Color(0xFFC29102) else emptyStarColor
             StarCanvasSmooth(
                 modifier = Modifier.size(starSize).padding(end = 4.dp),
                 fillColor = color,
-                borderColor = color
+                borderColor = borderColor
             )
         }
     }
@@ -217,6 +218,7 @@ fun StarCanvasSmooth(
             val strokePaint = Paint().apply {
                 this.color = borderColor
                 this.style = PaintingStyle.Stroke
+                this.strokeWidth = 5f
                 this.pathEffect = PathEffect.cornerPathEffect(cornerRadius)
             }
             canvas.drawPath(starPath, strokePaint)

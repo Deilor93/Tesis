@@ -31,15 +31,15 @@ fun PreguntaPatronInteractivo(
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(15.dp),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         AnimacionTexto(preguntaText)
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .padding(start = 350.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
 
@@ -48,22 +48,23 @@ fun PreguntaPatronInteractivo(
                 idPregunta = idPregunta,
                 modifier = Modifier
                     .size(350.dp)
-                    .padding(vertical = 15.dp)
+                    .weight(0.5f)
             )
 
             // Grid del patron para seleccionar
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(8.dp)
                     .fillMaxHeight(0.8f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.CenterEnd
             ) {
                 FlexiblePatternGrid(
                     rows = rows,
                     columns = columns,
                     initialPattern = currentPattern,
                     onPatternCompleted = onPatternChanged,
-                    dotRadius = 20f, // smaller dots
+                    dotRadius = 20f,
                 )
             }
         }

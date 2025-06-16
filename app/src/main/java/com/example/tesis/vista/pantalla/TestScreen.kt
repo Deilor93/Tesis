@@ -396,168 +396,174 @@ fun TestScreen(
                         )
                     }
                     //Columna Soly
-                    Box(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        AnimacionImagenPorNivel(
-                            currentStep = currentStep,
-                            modifier = Modifier
-                                .size(300.dp)
-                                .align(Alignment.Center)
-                        )
-                    }
+
                 }
                 //Fila pregunta
-                Row(
+                Box(
                     modifier = Modifier.weight(1f)
                 ) {
-                    //Seleccion de pregunta basada en tipo
-                    when (tipoPregunta) {
-                        1-> {
-                            // Preguntas seleccion multiple
-                            SeleccionMultiple(
-                                context = context,
-                                idPregunta = idPregunta,
-                                questionText = preguntaText,
-                                radioOptions = radioOptions,
-                                selectedOption = selectedOption,
-                                onOptionSelected = onOptionSelected
+                    Column(){
+                        Box(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            AnimacionImagenPorNivel(
+                                currentStep = currentStep,
+                                modifier = Modifier
+                                    .size(250.dp)
+                                    .align(Alignment.Center)
                             )
                         }
-                        2 -> {
-                            // Pregunta de patron interactivo
-                            PreguntaPatronInteractivo(
-                                context = context,
-                                idPregunta = idPregunta,
-                                preguntaText = preguntaText,
-                                currentPattern = userPattern,
-                                onPatternChanged = { userPattern = it },
-                            )
-                        }
-                        3 -> {
-                            // Pregunta de respuesta abierta
-                            PreguntaRespuestaAbierta(context = context,
-                                idPregunta = idPregunta,
-                                preguntaText = preguntaText,
-                                radioOptions = radioOptions,
-                                respuestas = userAnswers,
-                                onAnswersChanged = { userAnswers = it }
-                            )
-                        }
-                        4 -> {
-                            // Pregunta de mover objetos
-                            when(idPregunta){
-                                15->{
-                                    PreguntaArrastrarYUbicar(
-                                        context = context,
-                                        idPregunta = idPregunta,
-                                        preguntaText = preguntaText,
-                                        items = amigosSoly,
-                                        gridSize = 4,
-                                        onAssignmentChanged = { statusList ->
-                                            assignedStatus.clear()
-                                            assignedStatus.addAll(statusList)
-                                        }
-                                    )
-                                    currentDragItems = amigosSoly
-                                }
-                                17->{
-                                    PreguntaArrastrarYUbicar(
-                                        context = context,
-                                        idPregunta = idPregunta,
-                                        preguntaText = preguntaText,
-                                        items = bichos,
-                                        gridSize = 4,
-                                        onAssignmentChanged = { statusList ->
-                                            assignedStatus.clear()
-                                            assignedStatus.addAll(statusList)
-                                        }
-                                    )
-                                    currentDragItems = bichos
-                                }
-                                18->{
-                                    PreguntaArrastrarYUbicar(
-                                        context = context,
-                                        idPregunta = idPregunta,
-                                        preguntaText = preguntaText,
-                                        items = puzzle,
-                                        gridSize = 4,
-                                        onAssignmentChanged = { statusList ->
-                                            assignedStatus.clear()
-                                            assignedStatus.addAll(statusList)
-                                        }
-                                    )
-                                    currentDragItems = puzzle
+                    }
+                    Column(){
+                        //Seleccion de pregunta basada en tipo
+                        when (tipoPregunta) {
+                            1-> {
+                                // Preguntas seleccion multiple
+                                SeleccionMultiple(
+                                    context = context,
+                                    idPregunta = idPregunta,
+                                    questionText = preguntaText,
+                                    radioOptions = radioOptions,
+                                    selectedOption = selectedOption,
+                                    onOptionSelected = onOptionSelected
+                                )
+                            }
+                            2 -> {
+                                // Pregunta de patron interactivo
+                                PreguntaPatronInteractivo(
+                                    context = context,
+                                    idPregunta = idPregunta,
+                                    preguntaText = preguntaText,
+                                    currentPattern = userPattern,
+                                    onPatternChanged = { userPattern = it },
+                                )
+                            }
+                            3 -> {
+                                // Pregunta de respuesta abierta
+                                PreguntaRespuestaAbierta(context = context,
+                                    idPregunta = idPregunta,
+                                    preguntaText = preguntaText,
+                                    radioOptions = radioOptions,
+                                    respuestas = userAnswers,
+                                    onAnswersChanged = { userAnswers = it }
+                                )
+                            }
+                            4 -> {
+                                // Pregunta de mover objetos
+                                when(idPregunta){
+                                    15->{
+                                        PreguntaArrastrarYUbicar(
+                                            context = context,
+                                            idPregunta = idPregunta,
+                                            preguntaText = preguntaText,
+                                            items = amigosSoly,
+                                            gridSize = 4,
+                                            onAssignmentChanged = { statusList ->
+                                                assignedStatus.clear()
+                                                assignedStatus.addAll(statusList)
+                                            }
+                                        )
+                                        currentDragItems = amigosSoly
+                                    }
+                                    17->{
+                                        PreguntaArrastrarYUbicar(
+                                            context = context,
+                                            idPregunta = idPregunta,
+                                            preguntaText = preguntaText,
+                                            items = bichos,
+                                            gridSize = 4,
+                                            onAssignmentChanged = { statusList ->
+                                                assignedStatus.clear()
+                                                assignedStatus.addAll(statusList)
+                                            }
+                                        )
+                                        currentDragItems = bichos
+                                    }
+                                    18->{
+                                        PreguntaArrastrarYUbicar(
+                                            context = context,
+                                            idPregunta = idPregunta,
+                                            preguntaText = preguntaText,
+                                            items = puzzle,
+                                            gridSize = 4,
+                                            onAssignmentChanged = { statusList ->
+                                                assignedStatus.clear()
+                                                assignedStatus.addAll(statusList)
+                                            }
+                                        )
+                                        currentDragItems = puzzle
+                                    }
                                 }
                             }
-                        }
-                        5 -> {
-                            // Pregunta de claisificar objetos
-                            when(idPregunta){
-                                23->{
-                                    PreguntaClasificarConArrastre(
-                                        context = context,
-                                        idPregunta = idPregunta,
-                                        preguntaText = preguntaText,
-                                        items = figurasP23,
-                                        containerLabels = labelsP23,
-                                        onAssignmentChanged = { assignments ->
-                                            isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
-                                            println("Assignments: $assignments")
-                                            Log.d("currentitem", currentDragItems.toString())
-                                        }
-                                    )
-                                    currentDragItems = figurasP23
-                                }
-                                39->{
-                                    PreguntaClasificarConArrastre(
-                                        context = context,
-                                        idPregunta = idPregunta,
-                                        preguntaText = preguntaText,
-                                        items = figurasP39,
-                                        containerLabels = labelsP39,
-                                        onAssignmentChanged = { assignments ->
-                                            isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
-                                            println("Assignments: $assignments")
-                                            Log.d("currentitem", currentDragItems.toString())
-                                        }
-                                    )
-                                    currentDragItems = figurasP39
-                                }
-                                40->{
-                                    PreguntaClasificarConArrastre(
-                                        context = context,
-                                        idPregunta = idPregunta,
-                                        preguntaText = preguntaText,
-                                        items = animalesSombra,
-                                        containerLabels = labelsP40,
-                                        cellImages = sombras,
-                                        onAssignmentChanged = { assignments ->
-                                            isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
-                                            println("Assignments: $assignments")
-                                            Log.d("currentitem", currentDragItems.toString())
-                                        }
-                                    )
-                                    currentDragItems = animalesSombra
-                                }
-                                41->{
-                                    PreguntaClasificarConArrastre(
-                                        context = context,
-                                        idPregunta = idPregunta,
-                                        preguntaText = preguntaText,
-                                        items = figurasP41,
-                                        containerLabels = labelsP41,
-                                        onAssignmentChanged = { assignments ->
-                                            isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
-                                            println("Assignments: $assignments")
-                                            Log.d("currentitem", currentDragItems.toString())
-                                        }
-                                    )
-                                    currentDragItems = figurasP41
+                            5 -> {
+                                // Pregunta de claisificar objetos
+                                when(idPregunta){
+                                    23->{
+                                        PreguntaClasificarConArrastre(
+                                            context = context,
+                                            idPregunta = idPregunta,
+                                            preguntaText = preguntaText,
+                                            items = figurasP23,
+                                            containerLabels = labelsP23,
+                                            onAssignmentChanged = { assignments ->
+                                                isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
+                                                println("Assignments: $assignments")
+                                                Log.d("currentitem", currentDragItems.toString())
+                                            }
+                                        )
+                                        currentDragItems = figurasP23
+                                    }
+                                    39->{
+                                        PreguntaClasificarConArrastre(
+                                            context = context,
+                                            idPregunta = idPregunta,
+                                            preguntaText = preguntaText,
+                                            items = figurasP39,
+                                            containerLabels = labelsP39,
+                                            onAssignmentChanged = { assignments ->
+                                                isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
+                                                println("Assignments: $assignments")
+                                                Log.d("currentitem", currentDragItems.toString())
+                                            }
+                                        )
+                                        currentDragItems = figurasP39
+                                    }
+                                    40->{
+                                        PreguntaClasificarConArrastre(
+                                            context = context,
+                                            idPregunta = idPregunta,
+                                            preguntaText = preguntaText,
+                                            items = animalesSombra,
+                                            containerLabels = labelsP40,
+                                            cellImages = sombras,
+                                            onAssignmentChanged = { assignments ->
+                                                isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
+                                                println("Assignments: $assignments")
+                                                Log.d("currentitem", currentDragItems.toString())
+                                            }
+                                        )
+                                        currentDragItems = animalesSombra
+                                    }
+                                    41->{
+                                        PreguntaClasificarConArrastre(
+                                            context = context,
+                                            idPregunta = idPregunta,
+                                            preguntaText = preguntaText,
+                                            items = figurasP41,
+                                            containerLabels = labelsP41,
+                                            onAssignmentChanged = { assignments ->
+                                                isClassificationAnswerGiven = currentDragItems.any { it.assignedLabel != null && it.assignedLabel != "Ninguno" }
+                                                println("Assignments: $assignments")
+                                                Log.d("currentitem", currentDragItems.toString())
+                                            }
+                                        )
+                                        currentDragItems = figurasP41
+                                    }
                                 }
                             }
                         }
                     }
+
                 }
             }
             Box(modifier = Modifier.weight(0.1f).fillMaxHeight()) {
@@ -626,10 +632,10 @@ fun TestScreen(
                     }
                 ) {
                     Icon(
+                        modifier = Modifier.size(70.dp),
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "Siguiente",
-                        tint = Color.Black,
-                        modifier = Modifier.size(48.dp)
+                        tint = Color(0xFF085A5D)
                     )
                 }
             }
