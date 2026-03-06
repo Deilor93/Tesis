@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -26,19 +27,28 @@ fun ImagenArrastrable(
     initialOffset: Offset,
     cellWidthPx: Float,
     cellHeightPx: Float,
+    boxWidthPx: Float,
+    boxHeightPx: Float,
     onAssignmentChanged: (List<Boolean>) -> Unit
 ) {
     var offset by remember { mutableStateOf(initialOffset) }
+    val itemWidthPx = with(LocalDensity.current) { 80.dp.toPx() }
+    val itemHeightPx = with(LocalDensity.current) { 80.dp.toPx() }
+
 
     Box(
         modifier = Modifier
             .offset { IntOffset(offset.x.roundToInt(), offset.y.roundToInt()) }
-            .size(80.dp)
+            .size(90.dp)
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDrag = { change, dragAmount ->
                         change.consume()
-                        offset += dragAmount
+                        val newOffset = offset + dragAmount
+                        val clampedX = newOffset.x.coerceIn(0f, boxWidthPx - itemWidthPx)
+                        val clampedY = newOffset.y.coerceIn(0f, boxHeightPx - itemHeightPx)
+
+                        offset = Offset(clampedX, clampedY)
                     },
                     onDragEnd = {
                         val nearestCell = gridCells.minByOrNull { cell ->

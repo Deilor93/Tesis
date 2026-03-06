@@ -139,12 +139,14 @@ fun StepWithLine(
                 modifier = modifier,
                 isComplete = isComplete,
                 innerCircleColor = fillColor,
+                number = stepIndex
             )
         }else{
             Step(
                 modifier = modifier,
                 isComplete = showStarComplete,
                 innerCircleColor = fillColor,
+                number = stepIndex
             )
         }
     }
@@ -152,20 +154,22 @@ fun StepWithLine(
 
 //Crea los pasos de la barra de progreso para poder mostrar en pantalla
 @Composable
-fun Step(modifier: Modifier = Modifier, isComplete: Boolean, innerCircleColor: Color) {
+fun Step(modifier: Modifier = Modifier, isComplete: Boolean, innerCircleColor: Color, number: Int) {
 
     Box(modifier = modifier) {
         if(isComplete){
             StarCanvasSmooth(
                 modifier = modifier,
                 fillColor = innerCircleColor,
-                borderColor = Color(0xFFC29102)
+                borderColor = Color(0xFFC29102),
+                number = number + 1
             )
         } else{
             StarCanvasSmooth(
                 modifier = modifier,
                 fillColor = Color.LightGray,
-                borderColor = Color.LightGray
+                borderColor = Color(0xFFC29102),
+                number = number + 1
             )
         }
     }
@@ -198,6 +202,7 @@ fun StarCanvasSmooth(
     modifier: Modifier = Modifier,
     fillColor: Color,
     borderColor: Color,
+    number: Int? = null,
     cornerRadius: Float = 30f,
     points: Int = 5
 ) {
@@ -222,6 +227,21 @@ fun StarCanvasSmooth(
                 this.pathEffect = PathEffect.cornerPathEffect(cornerRadius)
             }
             canvas.drawPath(starPath, strokePaint)
+            number?.let {
+                val textPaint = android.graphics.Paint().apply {
+                    color = borderColor.toArgb()
+                    textAlign = android.graphics.Paint.Align.CENTER
+                    textSize = size.minDimension / 3f
+                    isAntiAlias = true
+                    typeface = android.graphics.Typeface.DEFAULT_BOLD
+                }
+                canvas.nativeCanvas.drawText(
+                    it.toString(),
+                    center.x,
+                    center.y + textPaint.textSize / 3f, // center vertically
+                    textPaint
+                )
+            }
         }
     }
 }

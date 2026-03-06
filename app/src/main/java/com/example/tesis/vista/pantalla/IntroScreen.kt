@@ -22,6 +22,8 @@ import com.example.tesis.logica.DbClass
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
@@ -144,7 +146,7 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
                         )
                     }
 
-                    Button(
+                    ElevatedButton (
                         onClick = {
                             CoroutineScope(Dispatchers.IO).launch {
                                 try {
@@ -168,11 +170,12 @@ fun IntroScreen(navController: NavController, context: Context, sharedViewModel:
                                 }
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF34D9A2)),
-                        shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .wrapContentSize(Alignment.Center)
-                            .align(Alignment.End)
+                            .align(Alignment.End),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF34D9A2)),
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 20.dp)
                     ) {
                         Text("Comenzar", color = Color.Black)
                     }

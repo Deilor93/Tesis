@@ -9,11 +9,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.tesis.vista.util.ImagenPregunta
 
@@ -68,11 +72,14 @@ fun PreguntaPatronInteractivo(
                 )
             }
         }
-        Button(
+        ElevatedButton(
             onClick = { onPatternChanged("") },
             modifier = Modifier
                 .padding(top = 15.dp)
-                .align(Alignment.CenterHorizontally)
+                .align(Alignment.CenterHorizontally),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF34D9A2)),
+            shape = RoundedCornerShape(8.dp),
+            elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 20.dp)
         ) {
             Text("Borrar patrón")
         }

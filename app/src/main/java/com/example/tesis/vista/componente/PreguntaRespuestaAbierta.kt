@@ -70,41 +70,43 @@ fun PreguntaRespuestaAbierta(
 
                     columnItems.forEachIndexed { rowIndex, label ->
                         val index = colIndex * ((radioOptions.size + 1) / 2) + rowIndex
-                        Text(
-                            text = "$label:",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = Color(0xFF085A5D)
-                        )
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .height(50.dp)
-                                .width(100.dp)
-                                .border(
-                                    width = 3.dp, // Grosor
-                                    color= Color(0xFF085A5D),
-                                    shape = RoundedCornerShape(5.dp)
-                                ),
-                            value = respuestas.getOrNull(index) ?: "",
-                            onValueChange = { newText ->
-                                val filteredText = if (isNumeric) {
-                                    newText.filter { it.isDigit() }
-                                } else {
-                                    newText
-                                }
-                                val nuevaRespuesta = respuestas.toMutableList()
-                                if (nuevaRespuesta.size <= index) {
-                                    nuevaRespuesta.addAll(List(index - nuevaRespuesta.size + 1) { "" })
-                                }
-                                nuevaRespuesta[index] = filteredText
-                                onAnswersChanged(nuevaRespuesta)
-                            },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = if (isNumeric) KeyboardType.Number else KeyboardType.Text,
-                                imeAction = ImeAction.Next
+                        Row(){
+                            Text(
+                                text = "$label: ",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp,
+                                color = Color(0xFF085A5D)
                             )
-                        )
+                            OutlinedTextField(
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .width(100.dp)
+                                    .border(
+                                        width = 3.dp, // Grosor
+                                        color= Color(0xFF085A5D),
+                                        shape = RoundedCornerShape(5.dp)
+                                    ),
+                                value = respuestas.getOrNull(index) ?: "",
+                                onValueChange = { newText ->
+                                    val filteredText = if (isNumeric) {
+                                        newText.filter { it.isDigit() }
+                                    } else {
+                                        newText
+                                    }
+                                    val nuevaRespuesta = respuestas.toMutableList()
+                                    if (nuevaRespuesta.size <= index) {
+                                        nuevaRespuesta.addAll(List(index - nuevaRespuesta.size + 1) { "" })
+                                    }
+                                    nuevaRespuesta[index] = filteredText
+                                    onAnswersChanged(nuevaRespuesta)
+                                },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = if (isNumeric) KeyboardType.Number else KeyboardType.Text,
+                                    imeAction = ImeAction.Next
+                                )
+                            )
+                        }
                     }
                 }
             }

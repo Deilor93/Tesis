@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -63,12 +64,13 @@ fun SeleccionMultiple(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     RadioButton(
+                        modifier = Modifier.scale(2.0f),
                         selected = (text == selectedOption),
                         onClick = { onOptionSelected(text) }
                     )
                     Text(
                         text = text,
-                        fontSize = 20.sp,
+                        fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF085A5D)
                     )

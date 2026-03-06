@@ -146,6 +146,8 @@ fun PreguntaClasificarConArrastre(
                     cellWidthPx = cellWidthPx,
                     cellHeightPx = cellHeightPx,
                     initialOffset = item.assignedCell?.position ?: Offset.Zero,
+                    boxWidthPx = constraints.maxWidth.toFloat(),
+                    boxHeightPx = constraints.maxHeight.toFloat(),
                     onAssignmentChanged = { updatedAssignments ->
                         onAssignmentChanged(
                             items.map { it.assignedCell?.let { cell ->

@@ -58,15 +58,15 @@ fun AnimacionTexto(
             Text(
                 modifier = Modifier
                     .wrapContentSize(Alignment.Center)
-                    .padding(start = 50.dp),
+                    .padding(start = 70.dp),
                 text = pregunta,
-                fontSize = 35.sp,
+                fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF34D9A2),
                 fontFamily = Mogra,
             )
             Image(
-                modifier = Modifier.offset(x = 40.dp, y = 10.dp),
+                modifier = Modifier.offset(x = 40.dp, y = 15.dp),
                 painter = painterResource(R.drawable.burbuja_texto),
                 contentDescription = "Texto Soly",
             )
